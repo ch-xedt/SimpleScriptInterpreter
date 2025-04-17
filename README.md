@@ -12,6 +12,7 @@ A custom programming language interpreter written in C++
 <br>
 
 -  Variable declaration and assignment
+-  `const` and `let` keywords
 -  Multiple data types
     - Numeric values
     - String values
@@ -22,4 +23,24 @@ A custom programming language interpreter written in C++
 
 <br>
 
-#
+## Planned Features
+<br>
+
+- Print and other keyword
+- User defined Functions
+- User defined Structures
+- User defined Comments
+
+<br>
+
+## Example Code
+
+```
+const x = "You are : ";
+let y = 16;
+y = 17;
+const z = " years old."
+
+let w = x+y+z;
+w    //output: "You are : 17 years old."
+```
