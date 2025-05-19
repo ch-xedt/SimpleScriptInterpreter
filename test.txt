@@ -1,7 +1,6 @@
 let x = 17;
 let y = "You are : ";
 let z = " years old";
-const w = y + x + z ;
-w
+print( y + x + z );
 
 

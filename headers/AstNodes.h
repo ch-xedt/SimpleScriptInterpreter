@@ -15,7 +15,8 @@ enum class NodeType{
     IdentifierNode,
     BinaryNode,
     VariableDeclarationNode,
-    VariableAssignmentNode
+    VariableAssignmentNode,
+    PrintNode
 };
 
 struct Statement{
@@ -108,6 +109,17 @@ struct VariableAssignmentNode : public Expression{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"VariableAssignmentNode( ";
         assignmentVariable->print(depth+1);
+        value->print(depth+1);
+        cout<<"\n"<<indent<<" )";
+    }
+};
+
+struct PrintNode : public Statement{
+    shared_ptr<Expression> value;
+    PrintNode(shared_ptr<Expression> value) : Statement(NodeType::PrintNode), value(value){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"PrintNode( ";
         value->print(depth+1);
         cout<<"\n"<<indent<<" )";
     }

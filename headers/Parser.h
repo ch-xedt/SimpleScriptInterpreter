@@ -3,6 +3,7 @@
 
 #include "Lexer.h"
 #include "AstNodes.h"
+#include <memory>
 
 class Parser{
     private:
@@ -40,6 +41,9 @@ class Parser{
                     return parseVariableDeclaration(false);
                 case TokenArt::Const:
                     return parseVariableDeclaration(true);
+                
+                case TokenArt::Print:
+                    return parsePrint();
                 default:
                     return parseExpressions();
             }
@@ -118,6 +122,15 @@ class Parser{
                 return make_shared<VariableAssignmentNode>(left, assignValue);
             }
             return left;
+        }
+
+        shared_ptr<Statement> parsePrint(){
+            thisEat();
+            expect(TokenArt::OpenParen, "(");
+            shared_ptr<Expression> printValue = parseExpressions();
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<PrintNode>(printValue);
         }
 
 

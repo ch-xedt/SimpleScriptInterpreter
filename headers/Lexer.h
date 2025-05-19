@@ -11,6 +11,7 @@ using namespace std;
 enum class TokenArt {
     Let,
     Const,
+    Print,
     Number,
     Bool,
     Identifier,
@@ -26,9 +27,10 @@ enum class TokenArt {
     EndOfFile
 };
 
-unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
+inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"let", TokenArt::Let},
     {"const", TokenArt::Const},
+    {"print", TokenArt::Print}
 };
 
 struct Token {
@@ -53,6 +55,7 @@ class Lexer{
             switch (type) {
                 case TokenArt::Let: return "LetToken";
                 case TokenArt::Const: return "ConstToken";
+                case TokenArt::Print: return "PrintToken";
                 case TokenArt::Number: return "NumberToken";
                 case TokenArt::Identifier: return "IdentifierToken";
                 case TokenArt::BinaryOperator: return "BinaryOperatorToken";

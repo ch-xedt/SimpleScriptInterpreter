@@ -4,6 +4,9 @@
 #include "Values.h"
 #include "AstNodes.h"
 #include "Environment.h"
+#include <memory>
+
+using namespace std;
 
 class Interpreter{
     private:
@@ -44,6 +47,11 @@ class Interpreter{
                     {
                         shared_ptr<VariableAssignmentNode> variableAssignmentNode = dynamic_pointer_cast<VariableAssignmentNode>(astNode);
                         return evaluateVariableAssignmentNode(variableAssignmentNode,environment);
+                    }
+                case NodeType::PrintNode:
+                    {
+                        shared_ptr<PrintNode> printNode = dynamic_pointer_cast<PrintNode>(astNode);
+                        return evaluatePrintNode(printNode,environment);
                     }
 
                 default:
@@ -171,6 +179,16 @@ class Interpreter{
             shared_ptr<IdentifierNode> assignmentVariable = dynamic_pointer_cast<IdentifierNode>(variableAssignmentNode->assignmentVariable);
             shared_ptr<R_Value> value = evaluate(variableAssignmentNode->value, environment);
             return environment->assignVariable(assignmentVariable->value,value);
+        }
+
+        shared_ptr<R_Value> evaluatePrintNode(shared_ptr<PrintNode> printNode,shared_ptr<Environment> environment){
+            shared_ptr<R_Value> value = evaluate(printNode->value,environment);
+            if(value->type == ValueType::NumberValue){
+                cout<<dynamic_pointer_cast<NumberValue>(value)->value;
+            }else if(value->type == ValueType::StringValue){
+                cout<<dynamic_pointer_cast<StringValue>(value)->value;
+            }
+            return value;
         }
 
 };
