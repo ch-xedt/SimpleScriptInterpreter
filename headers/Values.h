@@ -5,6 +5,7 @@
 #include "string"
 #include "cmath"
 #include "memory"
+#include "unordered_map"
 
 using namespace std;
 
@@ -12,7 +13,8 @@ enum class ValueType{
     NullValue,
     NumberValue,
     StringValue,
-    BoolValue
+    BoolValue,
+    ObjectValue
 };
 
 struct R_Value{
@@ -57,16 +59,29 @@ struct BoolValue:R_Value{
     }
 };
 
-shared_ptr<R_Value> makeNullValue(){
+struct ObjectValue:R_Value{
+    unordered_map<string, shared_ptr<R_Value>> properties;
+    ObjectValue():R_Value(ValueType::ObjectValue){}
+    void print() const override{
+        cout<<"\n ObjectValue ( ";
+        for(auto& prop : properties){
+            cout<<"\n "<<prop.first<<" : ";
+            prop.second->print();
+        }
+        cout<<"\n )";
+    }
+};
+
+inline shared_ptr<R_Value> makeNullValue(){
     return make_shared<NullValue>();
 }
-shared_ptr<R_Value> makeNumberValue(double val){
+inline shared_ptr<R_Value> makeNumberValue(double val){
     return make_shared<NumberValue>(val);  
 }
-shared_ptr<R_Value> makeStringValue(string val){
+inline shared_ptr<R_Value> makeStringValue(string val){
     return make_shared<StringValue>(val); 
 }
-shared_ptr<R_Value> makeBoolValue(bool val){
+inline shared_ptr<R_Value> makeBoolValue(bool val){
     return make_shared<BoolValue>(val);
 }
 

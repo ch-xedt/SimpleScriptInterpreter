@@ -30,7 +30,7 @@ enum class TokenArt {
 inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"let", TokenArt::Let},
     {"const", TokenArt::Const},
-    {"print", TokenArt::Print}
+    {"print", TokenArt::Print},
 };
 
 struct Token {

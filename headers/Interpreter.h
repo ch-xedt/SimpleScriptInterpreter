@@ -53,7 +53,11 @@ class Interpreter{
                         shared_ptr<PrintNode> printNode = dynamic_pointer_cast<PrintNode>(astNode);
                         return evaluatePrintNode(printNode,environment);
                     }
-
+                case NodeType::ObjectNode:
+                    {
+                        shared_ptr<ObjectNode> objectNode = dynamic_pointer_cast<ObjectNode>(astNode);
+                        return evaluateObjectNode(objectNode,environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -74,6 +78,7 @@ class Interpreter{
             numValue->value = numberNode->value;
             return numValue;
         }
+
         shared_ptr<R_Value> evaluateStringNode(shared_ptr<StringNode> stringNode,shared_ptr<Environment> environment){
             shared_ptr<StringValue> stringValue = make_shared<StringValue>();
             stringValue->value = stringNode->value;
@@ -181,7 +186,6 @@ class Interpreter{
             return result;
         }
 
-        
         shared_ptr<R_Value> evaluateCaseStringBooleanBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<StringValue> left, shared_ptr<BoolValue> right){
             shared_ptr<StringValue> result = make_shared<StringValue>();
 
@@ -216,12 +220,22 @@ class Interpreter{
                 cout<<"\n"<<dynamic_pointer_cast<StringValue>(value)->value;
             }else if(value->type == ValueType::BoolValue){
                 cout<<"\n"<<(dynamic_pointer_cast<BoolValue>(value)->value == 0? "false" : "true");                
+            }else if (value->type == ValueType::ObjectValue) {
+                dynamic_pointer_cast<ObjectValue>(value)->print();
             }
             return value;
         }
+
+        shared_ptr<R_Value> evaluateObjectNode(shared_ptr<ObjectNode> objectNode, shared_ptr<Environment> environment){
+            shared_ptr<ObjectValue> objectValue = make_shared<ObjectValue>();
+            for(auto& property : objectNode->properties){
+                objectValue->properties[property->key] = evaluate(property->value,environment);
+            }
+            return objectValue;
+        };
 
 };
 
 
 
-#endif
+#endif 

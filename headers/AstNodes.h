@@ -5,6 +5,7 @@
 #include "vector"
 #include "string"
 #include "memory"
+#include <memory>
 
 using namespace std;
 
@@ -16,7 +17,9 @@ enum class NodeType{
     BinaryNode,
     VariableDeclarationNode,
     VariableAssignmentNode,
-    PrintNode
+    PrintNode,
+    PropertyNode,
+    ObjectNode
 };
 
 struct Statement{
@@ -76,7 +79,7 @@ struct IdentifierNode : public Expression{
 struct BinaryNode : public Expression{
     shared_ptr<Expression> left;
     shared_ptr<Expression> right;
-    string op;
+    string op = "";
     BinaryNode(shared_ptr<Expression> left, shared_ptr<Expression> right, string op) : Expression(NodeType::BinaryNode), left(left),right(right),op(op){}
     void print(int depth) const override{
         string indent (3*depth,' ');
@@ -90,12 +93,12 @@ struct BinaryNode : public Expression{
 
 struct VariableDeclarationNode : public Statement{
     bool IsConstant = false;
-    string name;
+    string name = "";
     shared_ptr<Expression> value;
     VariableDeclarationNode(string name, shared_ptr<Expression> value, bool cons) : Statement(NodeType::VariableDeclarationNode), name(name),value(value),IsConstant(cons){}
     void print(int depth) const override{
         string indent (3*depth,' ');
-        cout<<"\n"<<indent<<"VariableDecleration( ' "<<name<<" '";
+        cout<<"\n"<<indent<<"VariableDeclaration( ' "<<name<<" '";
         value->print(depth+1);
         cout<<"\n"<<indent<<")";
     }
@@ -124,6 +127,32 @@ struct PrintNode : public Statement{
         cout<<"\n"<<indent<<" )";
     }
 };
+
+struct PropertyNode : public Expression{
+    string key = "";
+    shared_ptr<Expression> value;
+    PropertyNode(string key, shared_ptr<Expression> value) : Expression(NodeType::PropertyNode), key(key),value(value){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"PropertyNode( Key= '"<<key<<"' ";
+        value->print(depth+1);
+        cout<<"\n"<<indent<<" )";
+    }
+};
+
+struct ObjectNode : public Expression{
+    vector<shared_ptr<PropertyNode>> properties;
+    ObjectNode(vector<shared_ptr<PropertyNode>> properties) : Expression(NodeType::ObjectNode), properties(properties){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"ObjectNode( ";
+        for(auto &property : properties){
+            property->print(depth+1);
+        }
+        cout<<"\n"<<indent<<" )";
+    }
+};
+
 
 
 #endif

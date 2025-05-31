@@ -1,5 +1,5 @@
 let x = 16;
-x = x + 2;
+x = x + 1;
 let w = x + 1;
 print(w);
 let y = "You are : ";
@@ -7,3 +7,13 @@ const z = " years old";
 const isTrue = true;
 print( y + x + z + "    is: " + isTrue);
  
+const obj = {
+    s = "voll cool";
+    r = 12 ;
+    t = 5;
+};
+
+let b = obj;
+
+print ("object b :");
+print (b);

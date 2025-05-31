@@ -113,7 +113,7 @@ class Parser{
         }
 
         shared_ptr<Expression> parseVariableAssignment(){
-            shared_ptr<Expression> left = parseAdditivBinary();
+            shared_ptr<Expression> left = parseObjectExpression();
 
             if(notTheEnd() && thisToken().art== TokenArt::Equal){
                 thisEat();
@@ -132,6 +132,37 @@ class Parser{
             expect(TokenArt::Semicolon, ";");
             return make_shared<PrintNode>(printValue);
         }
+
+        shared_ptr<Expression> parseObjectExpression(){
+            vector<shared_ptr<PropertyNode>> properties;
+            if(thisToken().art != TokenArt::OpenBrace){
+                return parseAdditivBinary();
+            }
+            thisEat();
+
+            while(notTheEnd() && thisToken().art != TokenArt::CloseBrace){
+                string key = expect(TokenArt::Identifier, "Identifier").value;
+                if (thisToken().art == TokenArt::Semicolon){
+                    thisEat();
+                    properties.push_back(make_shared<PropertyNode>(key, nullptr));
+                    continue;
+                }else if (thisToken().art == TokenArt::CloseBrace){
+                    properties.push_back(make_shared<PropertyNode>(key, nullptr));
+                    continue;
+                }
+
+                expect(TokenArt::Equal, "=");
+                shared_ptr<Expression> value = parseExpressions();
+                properties.push_back(make_shared<PropertyNode>(key, value));
+                
+                if(thisToken().art != TokenArt::CloseBrace){
+                    expect(TokenArt::Semicolon, ";");
+                }
+            }
+
+            expect(TokenArt::CloseBrace, "}");
+            return make_shared<ObjectNode>(properties);
+        };
 
     public:
         Program produceAST(string source){
