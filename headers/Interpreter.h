@@ -96,6 +96,10 @@ class Interpreter{
                 return evaluateCaseNumericStringBinaryNode(binaryNode, dynamic_pointer_cast<NumberValue>(left), dynamic_pointer_cast<StringValue>(right));
             }else if(left->type == ValueType::StringValue && right->type == ValueType::NumberValue){
                 return evaluateCaseNumericStringBinaryNode(binaryNode, dynamic_pointer_cast<StringValue>(left), dynamic_pointer_cast<NumberValue>(right));
+            }else if(left->type == ValueType::BoolValue && right -> type == ValueType::StringValue){
+                return evaluateCaseStringBooleanBinaryNode(binaryNode, dynamic_pointer_cast<BoolValue>(left), dynamic_pointer_cast<StringValue>(right));
+            }else if(left->type == ValueType::StringValue && right -> type == ValueType::BoolValue){
+                return evaluateCaseStringBooleanBinaryNode(binaryNode, dynamic_pointer_cast<StringValue>(left), dynamic_pointer_cast<BoolValue>(right));
             }else{
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid binary operator / Case not found " <<binaryNode->op<<" \n";
                 exit(1);
@@ -165,6 +169,31 @@ class Interpreter{
             return result;
         }
 
+        shared_ptr<R_Value> evaluateCaseStringBooleanBinaryNode(shared_ptr<BinaryNode> binaryNode ,shared_ptr<BoolValue> left, shared_ptr<StringValue> right){
+            shared_ptr<StringValue> result = make_shared<StringValue>();
+
+            if(binaryNode->op == "+"){
+                result->value = left->value == 0 ? "false" : "true" + right->value;
+            }else{
+                result->value = left->value == 0 ? "false" : "true" + right->value;
+            }
+
+            return result;
+        }
+
+        
+        shared_ptr<R_Value> evaluateCaseStringBooleanBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<StringValue> left, shared_ptr<BoolValue> right){
+            shared_ptr<StringValue> result = make_shared<StringValue>();
+
+            if(binaryNode->op == "+"){
+                result->value = left->value + (right->value == 0 ? "false" : "true");
+            }else{
+                result->value = left->value + (right->value == 0 ? "false" : "true");
+            }
+
+            return result;
+        }
+
         shared_ptr<R_Value> evaluateVariableDeclarationNode(shared_ptr<VariableDeclarationNode> variableDeclarationNode,shared_ptr<Environment> environment){
             shared_ptr<R_Value> result = variableDeclarationNode->value ? evaluate(variableDeclarationNode->value, environment) : makeNullValue();
             return environment->declareVariable(variableDeclarationNode->name,result,variableDeclarationNode->IsConstant);
@@ -175,10 +204,8 @@ class Interpreter{
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid assignment variable type \n";
                 exit(1);
             }
-
-            shared_ptr<IdentifierNode> assignmentVariable = dynamic_pointer_cast<IdentifierNode>(variableAssignmentNode->assignmentVariable);
-            shared_ptr<R_Value> value = evaluate(variableAssignmentNode->value, environment);
-            return environment->assignVariable(assignmentVariable->value,value);
+            const string variableName = dynamic_pointer_cast<IdentifierNode>(variableAssignmentNode->assignmentVariable)->value;
+            return environment->assignVariable(variableName,evaluate(variableAssignmentNode->value,environment));
         }
 
         shared_ptr<R_Value> evaluatePrintNode(shared_ptr<PrintNode> printNode,shared_ptr<Environment> environment){
@@ -186,7 +213,9 @@ class Interpreter{
             if(value->type == ValueType::NumberValue){
                 cout<<dynamic_pointer_cast<NumberValue>(value)->value;
             }else if(value->type == ValueType::StringValue){
-                cout<<dynamic_pointer_cast<StringValue>(value)->value;
+                cout<<"\n"<<dynamic_pointer_cast<StringValue>(value)->value;
+            }else if(value->type == ValueType::BoolValue){
+                cout<<"\n"<<(dynamic_pointer_cast<BoolValue>(value)->value == 0? "false" : "true");                
             }
             return value;
         }

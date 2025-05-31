@@ -1,6 +1,9 @@
-let x = 17;
+let x = 16;
+x = x + 2;
+let w = x + 1;
+print(w);
 let y = "You are : ";
-let z = " years old";
-print( y + x + z );
-
-
+const z = " years old";
+const isTrue = true;
+print( y + x + z + "    is: " + isTrue);
+ 

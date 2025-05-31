@@ -64,7 +64,7 @@ class Environment:public std::enable_shared_from_this<Environment>{
 
         shared_ptr<Environment> resolve(string varname) {
             if(variables.find(varname) != variables.end()) {
-                return make_shared<Environment>(*this);
+                return shared_from_this();
             }
             if(parentEnvironment == nullptr) {
                 cerr << "\n[[Stage]] : Environment  [[ERROR]] : Variable not defined ---- Variable : " << varname << "\n";
@@ -75,7 +75,7 @@ class Environment:public std::enable_shared_from_this<Environment>{
 
 };
 
-void setupScope(shared_ptr<Environment> enviroment){
+inline void setupScope(shared_ptr<Environment> enviroment){
     enviroment->declareVariable("null", makeNullValue(), true);
     enviroment->declareVariable("true", makeBoolValue(true), true);  
     enviroment->declareVariable("false", makeBoolValue(false), true);
