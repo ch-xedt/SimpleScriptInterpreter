@@ -105,7 +105,7 @@ Or print both.
 const x = 2025;
 print("It`s" + x);                        // output: "It´s 2025"
 ```
-You can also print expressione.
+You can also print expressions.
 ```
 print("It`s" + (2024 + (3%2)) );          // output: "It´s 2025"
 ```
