@@ -42,9 +42,10 @@ class Parser{
                     return parseVariableDeclaration(false);
                 case TokenArt::Const:
                     return parseVariableDeclaration(true);
-                
                 case TokenArt::Print:
                     return parsePrint();
+                case TokenArt::If:
+                    return parseIf();
                 default:
                     return parseExpressions();
             }
@@ -86,10 +87,10 @@ class Parser{
         }
 
         shared_ptr<Expression> parseMultiplicativeBinary(){
-            shared_ptr<Expression> left = parseMemberExpression();
+            shared_ptr<Expression> left = parsePrimitives();
             while(notTheEnd() && (thisToken().value=="*" || thisToken().value=="/" || thisToken().value=="%")){
                 string operatorValue = thisEat().value;
-                shared_ptr<Expression> right = parseMemberExpression();
+                shared_ptr<Expression> right = parsePrimitives();
                 left=make_shared<BinaryNode>(left,right,operatorValue);
             } 
             return left;
@@ -114,8 +115,7 @@ class Parser{
         }
 
         shared_ptr<Expression> parseVariableAssignment(){
-            shared_ptr<Expression> left = parseObjectExpression();
-
+            shared_ptr<Expression> left = parseAdditivBinary();
             if(notTheEnd() && thisToken().art== TokenArt::Equal){
                 thisEat();
                 shared_ptr<Expression> assignValue = parseAdditivBinary();
@@ -134,98 +134,42 @@ class Parser{
             return make_shared<PrintNode>(printValue);
         }
 
-        shared_ptr<Expression> parseObjectExpression(){
-            vector<shared_ptr<PropertyNode>> properties;
-            if(thisToken().art != TokenArt::OpenBrace){
-                return parseAdditivBinary();
+        shared_ptr<Expression> parseConditional(){
+            shared_ptr<Expression> left = parseMultiplicativeBinary();
+            if(notTheEnd() && thisToken().value == "<" || thisToken().value == ">" || thisToken().value == "="){
+                string conditionOperator = thisEat().value;
+                shared_ptr<Expression> right = parseMultiplicativeBinary();
+                return make_shared<ConditionalNode>(left, right, conditionOperator);
+            }else{
+                cerr<<"\n[[Stage]]: Parsing     [[ERROR]] : Expected conditional operator got "<<thisToken().value;
+                exit(1);
             }
+        }
+
+        shared_ptr<Statement> parseIf(){
             thisEat();
-
-            while(notTheEnd() && thisToken().art != TokenArt::CloseBrace){
-                string key = expect(TokenArt::Identifier, "Identifier").value;
-                if (thisToken().art == TokenArt::Semicolon){
-                    thisEat();
-                    properties.push_back(make_shared<PropertyNode>(key, nullptr));
-                    continue;
-                }else if (thisToken().art == TokenArt::CloseBrace){
-                    properties.push_back(make_shared<PropertyNode>(key, nullptr));
-                    continue;
-                }
-
-                expect(TokenArt::Equal, "=");
-                shared_ptr<Expression> value = parseExpressions();
-                properties.push_back(make_shared<PropertyNode>(key, value));
-                
-                if(thisToken().art != TokenArt::CloseBrace){
-                    expect(TokenArt::Semicolon, ";");
-                }
-            }
-
-            expect(TokenArt::CloseBrace, "}");
-            return make_shared<ObjectNode>(properties);
-        }
-
-        shared_ptr<Expression> parseMemberExpression(){
-            shared_ptr<Expression> object = parsePrimitives();
-            while(thisToken().art == TokenArt::Dot || thisToken().art == TokenArt::OpenParen){
-                Token operatorToken = thisEat();
-                shared_ptr<Expression> property;
-                bool isComputedProperty = false;
-                if(operatorToken.art == TokenArt::Dot){
-                    isComputedProperty = false;
-                    property = parsePrimitives();
-                    if (property->node != NodeType::IdentifierNode) {
-                        cerr << "\n[[Stage]]: Parsing     [[ERROR]] : Invalid property access. Expected an identifier.";
-                        exit(1);
-                    }
-                }else {
-                    isComputedProperty = true;
-                    property = parseExpressions();
-                    expect(TokenArt::CloseParen, ")");
-                }
-                object = make_shared<MemberNode>(object, property, isComputedProperty);
-            }
-            return object;
-        }
-
-        shared_ptr<Expression> parseMemberCallExpression(){
-            shared_ptr<Expression> member = parseMemberExpression();
-            if(thisToken().art == TokenArt::OpenParen){
-                return parseCallExpression(member);
-            }
-            return member;
-        }
-
-        shared_ptr<Expression> parseCallExpression(shared_ptr<Expression> caller){
-            shared_ptr<Expression> callExpression = make_shared<CallNode>(caller, parseCallArguments());
-            if(thisToken().art == TokenArt::OpenParen){
-                callExpression = parseCallExpression(callExpression);
-            }
-            return callExpression;
-        }
-
-        vector<shared_ptr<Expression>> parseCallArguments(){
-            vector<shared_ptr<Expression>> args;
             expect(TokenArt::OpenParen, "(");
-            if(thisToken().art == TokenArt::CloseParen){
-                return {};
-            }
-            args = parseFunctionArgumentsList();
+            shared_ptr<Expression> condition = parseConditional();
             expect(TokenArt::CloseParen, ")");
-            return args;
-        }
-
-        vector<shared_ptr<Expression>> parseFunctionArgumentsList(){
-            vector<shared_ptr<Expression>> args;
-            args.push_back(parseVariableAssignment());
-            while(thisToken().art == TokenArt::Comma){
-                thisEat();
-                args.push_back(parseVariableAssignment());
+            expect(TokenArt::OpenBrace, "{");
+            vector<shared_ptr<Statement>> ifBody;
+            while(notTheEnd() && thisToken().art != TokenArt::CloseBrace){
+                ifBody.push_back(parseStatements());
             }
-            return args;
+            expect(TokenArt::CloseBrace, "}");
+            if(notTheEnd() && thisToken().art == TokenArt::Else){
+                thisEat();
+                expect(TokenArt::OpenBrace, "{");
+                vector<shared_ptr<Statement>> elseBody;
+                while(notTheEnd() && thisToken().art!= TokenArt::CloseBrace){
+                    elseBody.push_back(parseStatements());
+                }
+                expect(TokenArt::CloseBrace, "}");
+                return make_shared<IfNode>(condition, ifBody, elseBody);
+            }
+            return make_shared<IfNode>(condition, ifBody);
         }
-
-
+        
 
     public:
         Program produceAST(string source){

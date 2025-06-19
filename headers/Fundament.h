@@ -17,7 +17,7 @@ class Fundament{
 
             environment->initEnvironment();
 
-            program=parser.produceAST(reader.readFile("../"+filename));
+            program=parser.produceAST(reader.readFile(filename));
             program.print(1); 
 
             shared_ptr<R_Value> lastResult = make_shared<NullValue>(); 

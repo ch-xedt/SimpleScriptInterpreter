@@ -12,6 +12,8 @@ enum class TokenArt {
     Let,
     Const,
     Print,
+    If,
+    Else,
     Function,
     Number,
     Bool,
@@ -27,6 +29,8 @@ enum class TokenArt {
     Semicolon,//;
     Comma,//,
     Dot,//.
+    Greater,//>
+    Lesser,//<
     EndOfFile
 };
 
@@ -34,6 +38,8 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"let", TokenArt::Let},
     {"const", TokenArt::Const},
     {"print", TokenArt::Print},
+    {"if", TokenArt::If},
+    {"else", TokenArt::Else},
 };
 
 struct Token {
@@ -127,6 +133,12 @@ class Lexer{
                     source.erase(0, 1); 
                 }else if (source[0] == '.') {
                     tokens.push_back({ ".", TokenArt::Dot });
+                    source.erase(0, 1); 
+                }else if (source[0] == '>') {
+                    tokens.push_back({ ">", TokenArt::Greater });
+                    source.erase(0, 1); 
+                }else if (source[0] == '<') {
+                    tokens.push_back({ "<", TokenArt::Lesser });
                     source.erase(0, 1); 
                 }else if (isAlpha(source[0])) {
                     string identifier = "";

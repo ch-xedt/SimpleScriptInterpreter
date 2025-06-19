@@ -1,0 +1,16 @@
+let x = 5;
+let y = 2;
+
+if( x < y ){
+    print("x is smaller than y");
+}else{
+    print("x is bigger than y");
+}
+
+let run = true;
+
+if(run = true){
+    print("is running");
+}else{
+    print("is not running");
+}

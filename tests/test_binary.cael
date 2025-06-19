@@ -1,10 +1,11 @@
 let x = 16;
 x = x + 1;
+
 let w = x + 1;
 print(w);
 
 let y = "You are : ";
-const z = " years old";
-const isTrue = true;
+const z = " years old.";
+const isHuman = true;
 
-print( y + x + z + "    That is: " + isTrue);
+print( y + x + z + "    Are you human: " + isTrue); 

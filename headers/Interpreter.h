@@ -4,6 +4,7 @@
 #include "Values.h"
 #include "AstNodes.h"
 #include "Environment.h"
+#include <cstdlib>
 #include <memory>
 
 using namespace std;
@@ -53,10 +54,15 @@ class Interpreter{
                         shared_ptr<PrintNode> printNode = dynamic_pointer_cast<PrintNode>(astNode);
                         return evaluatePrintNode(printNode,environment);
                     }
-                case NodeType::ObjectNode:
+                case NodeType::IfNode:
                     {
-                        shared_ptr<ObjectNode> objectNode = dynamic_pointer_cast<ObjectNode>(astNode);
-                        return evaluateObjectNode(objectNode,environment);
+                        shared_ptr<IfNode> ifNode = dynamic_pointer_cast<IfNode>(astNode);
+                        return evaluateIfNode(ifNode,environment);
+                    }
+                case NodeType::ConditionalNode:
+                    {
+                        shared_ptr<ConditionalNode> conditionalNode = dynamic_pointer_cast<ConditionalNode>(astNode);
+                        return evaluateConditionalNode(conditionalNode,environment);
                     }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
@@ -105,12 +111,6 @@ class Interpreter{
                 return evaluateCaseStringBooleanBinaryNode(binaryNode, dynamic_pointer_cast<BoolValue>(left), dynamic_pointer_cast<StringValue>(right));
             }else if(left->type == ValueType::StringValue && right -> type == ValueType::BoolValue){
                 return evaluateCaseStringBooleanBinaryNode(binaryNode, dynamic_pointer_cast<StringValue>(left), dynamic_pointer_cast<BoolValue>(right));
-            }else if(left->type == ValueType::StringValue && right -> type == ValueType::ObjectValue){
-                return evaluateCaseStringObjectBinaryNode(binaryNode, dynamic_pointer_cast<StringValue>(left), dynamic_pointer_cast<ObjectValue>(right));
-            }else if(left->type == ValueType::ObjectValue && right -> type == ValueType::StringValue){
-                return evaluateCaseStringObjectBinaryNode(binaryNode, dynamic_pointer_cast<ObjectValue>(left), dynamic_pointer_cast<StringValue>(right));
-            }else if(left->type == ValueType::NumberValue && right -> type == ValueType::ObjectValue){
-                return evaluateCaseNumericObjectBinaryNode(binaryNode, dynamic_pointer_cast<NumberValue>(left), dynamic_pointer_cast<ObjectValue>(right));
             }else{
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid binary operator / Case not found " <<binaryNode->op<<" \n";
                 exit(1);
@@ -204,55 +204,6 @@ class Interpreter{
             return result;
         }
 
-        shared_ptr<R_Value> evaluateCaseStringObjectBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<StringValue> left, shared_ptr<ObjectValue> right){
-            shared_ptr<StringValue> result = make_shared<StringValue>();
-
-            if(binaryNode->op == "+"){
-                result->value = left->value + right->getAllProperties();
-            }else{
-                result->value = left->value + right->getAllProperties();
-            }
-
-            return result;
-
-        }
-
-        shared_ptr<R_Value> evaluateCaseStringObjectBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<ObjectValue> left, shared_ptr<StringValue> right){
-            shared_ptr<StringValue> result = make_shared<StringValue>();
-
-            if(binaryNode->op == "+"){
-                result->value = left->getAllProperties() + right->value;
-            }else{
-                result->value = left->getAllProperties() + right->value;
-            }
-
-            return result;
-
-        }
-
-        shared_ptr<R_Value> evaluateCaseNumericObjectBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<NumberValue> left, shared_ptr<ObjectValue> right){
-            shared_ptr<StringValue> result = make_shared<StringValue>();
-
-            if(binaryNode->op == "+"){
-                result->value = to_string(left->value) +" "+ right->getAllProperties();
-            }else{
-                result->value = to_string(left->value) +" "+ right->getAllProperties();
-            }
-
-            return result;
-        }
-
-        shared_ptr<R_Value> evaluateCaseNumericObjectBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<ObjectValue> left, shared_ptr<NumberValue> right){
-            shared_ptr<StringValue> result = make_shared<StringValue>();
-
-            if(binaryNode->op == "+"){
-                result->value = left->getAllProperties() + to_string(right->value);
-            }else{
-                result->value = left->getAllProperties() + to_string(right->value);
-            }
-
-            return result;
-        }
 
         shared_ptr<R_Value> evaluateVariableDeclarationNode(shared_ptr<VariableDeclarationNode> variableDeclarationNode,shared_ptr<Environment> environment){
             shared_ptr<R_Value> result = variableDeclarationNode->value ? evaluate(variableDeclarationNode->value, environment) : makeNullValue();
@@ -276,20 +227,55 @@ class Interpreter{
                 cout<<"\n"<<dynamic_pointer_cast<StringValue>(value)->value;
             }else if(value->type == ValueType::BoolValue){
                 cout<<"\n"<<(dynamic_pointer_cast<BoolValue>(value)->value == 0? "false" : "true");                
-            }else if (value->type == ValueType::ObjectValue) {
-                dynamic_pointer_cast<ObjectValue>(value)->print();
             }
             return value;
         }
 
-        shared_ptr<R_Value> evaluateObjectNode(shared_ptr<ObjectNode> objectNode, shared_ptr<Environment> environment){
-            shared_ptr<ObjectValue> objectValue = make_shared<ObjectValue>();
-            for(auto& property : objectNode->properties){
-                objectValue->properties[property->key] = evaluate(property->value,environment);
+        shared_ptr<R_Value> evaluateIfNode(shared_ptr<IfNode> ifNode, shared_ptr<Environment> environment){
+            shared_ptr<R_Value> condition = evaluate(ifNode->condition,environment);
+            if(dynamic_pointer_cast<BoolValue>(condition)->value == true){
+                for (auto& statement : ifNode->ifBody){
+                    evaluate(statement,environment);
+                }
+                return makeNullValue();
+            }else {
+                for (auto& statement : ifNode->elseBody){
+                    evaluate(statement,environment);
+                }
+                return makeNullValue();
             }
-            return objectValue;
-        };
+        }
 
+        shared_ptr<R_Value> evaluateConditionalNode(shared_ptr<ConditionalNode> conditionalNode, shared_ptr<Environment> environment){
+            shared_ptr<R_Value> left = evaluate(conditionalNode->left,environment);
+            shared_ptr<R_Value> right = evaluate(conditionalNode->right,environment);
+            shared_ptr<BoolValue> result = make_shared<BoolValue>();
+            if(left->type == ValueType::NumberValue && right->type == ValueType::NumberValue){
+                if(conditionalNode->conditionOperator == ">"){
+                    result->value = dynamic_pointer_cast<NumberValue>(left)->value > dynamic_pointer_cast<NumberValue>(right)->value;
+                }else if (conditionalNode->conditionOperator == "<") {
+                    result->value = dynamic_pointer_cast<NumberValue>(left)->value < dynamic_pointer_cast<NumberValue>(right)->value;
+                }else if (conditionalNode->conditionOperator == "=") {
+                    result->value = dynamic_pointer_cast<NumberValue>(left)->value == dynamic_pointer_cast<NumberValue>(right)->value;
+                }
+            }else if (left->type == ValueType::StringValue && right->type == ValueType::StringValue) {
+                if(conditionalNode->conditionOperator == "="){
+                    result->value = dynamic_pointer_cast<StringValue>(left)->value == dynamic_pointer_cast<StringValue>(right)->value;
+                }
+            }else if (left->type == ValueType::BoolValue && right->type == ValueType::BoolValue){
+                if(conditionalNode->conditionOperator == ">"){
+                    result->value = dynamic_pointer_cast<BoolValue>(left)->value > dynamic_pointer_cast<BoolValue>(right)->value;
+                }else if (conditionalNode->conditionOperator == "<") {
+                    result->value = dynamic_pointer_cast<BoolValue>(left)->value < dynamic_pointer_cast<BoolValue>(right)->value;
+                }else if (conditionalNode->conditionOperator == "=") {
+                    result->value = dynamic_pointer_cast<BoolValue>(left)->value == dynamic_pointer_cast<BoolValue>(right)->value;
+                }
+            }else {
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid conditional operation between different values\n";
+                exit(1);
+            }
+            return result;
+        }
 
 };
 

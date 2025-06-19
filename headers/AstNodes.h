@@ -18,11 +18,8 @@ enum class NodeType{
     VariableDeclarationNode,
     VariableAssignmentNode,
     PrintNode,
-    PropertyNode,
-    ObjectNode,
-    MemberNode,
-    CallNode,
-    FunctionDeclarationNode
+    ConditionalNode,
+    IfNode,
 };
 
 struct Statement{
@@ -131,64 +128,33 @@ struct PrintNode : public Statement{
     }
 };
 
-struct PropertyNode : public Expression{
-    string key = "";
-    shared_ptr<Expression> value;
-    PropertyNode(string key, shared_ptr<Expression> value) : Expression(NodeType::PropertyNode), key(key),value(value){}
+struct ConditionalNode : public Expression{
+    shared_ptr<Expression> left;
+    shared_ptr<Expression> right;
+    string conditionOperator = "";
+    ConditionalNode(shared_ptr<Expression> left, shared_ptr<Expression> right, string conditionOperator) : Expression(NodeType::ConditionalNode), left(left),right(right),conditionOperator(conditionOperator){}
     void print(int depth) const override{
         string indent(3*depth,' ');
-        cout<<"\n"<<indent<<"PropertyNode( Key= '"<<key<<"' ";
-        value->print(depth+1);
-        cout<<"\n"<<indent<<" )";
+        cout<<"\n"<<indent<<"ConditionalNode( ";
+        left->print(depth+1);
+        cout<<" "<<conditionOperator<<" ";
+        right->print(depth+1);
+        cout<<"\n"<<indent<<")";
     }
 };
 
-struct ObjectNode : public Expression{
-    vector<shared_ptr<PropertyNode>> properties;
-    ObjectNode(vector<shared_ptr<PropertyNode>> properties) : Expression(NodeType::ObjectNode), properties(properties){}
+struct IfNode : public Statement{
+    shared_ptr<Expression> condition;
+    vector<shared_ptr<Statement>> ifBody;
+    vector<shared_ptr<Statement>> elseBody;
+    IfNode(shared_ptr<Expression> condition, vector<shared_ptr<Statement>> ifBody) : Statement(NodeType::IfNode), condition(condition),ifBody(ifBody){}
+    IfNode(shared_ptr<Expression> condition, vector<shared_ptr<Statement>> ifBody, vector<shared_ptr<Statement>> elseBody) : Statement(NodeType::IfNode), condition(condition),ifBody(ifBody),elseBody(elseBody){}
     void print(int depth) const override{
         string indent(3*depth,' ');
-        cout<<"\n"<<indent<<"ObjectNode( ";
-        for(auto &property : properties){
-            property->print(depth+1);
-        }
-        cout<<"\n"<<indent<<" )";
+        cout<<"\n"<<indent<<"IfNode( ";
+        condition->print(depth+1);
+        cout<<"\n"<<indent<<")";
     }
-};
-
-struct MemberNode : public Expression{
-    shared_ptr<Expression> object;
-    shared_ptr<Expression> property;
-    bool computed = false;
-    MemberNode(shared_ptr<Expression> object, shared_ptr<Expression> property, bool computed) : Expression(NodeType::MemberNode), object(object),property(property),computed(computed){}
-    void print(int depth) const override{
-        string indent(3*depth,' ');
-        cout<<"\n"<<indent<<"MemberNode( computed = "<<computed;
-        object->print(depth+1);
-        property->print(depth+1);
-        cout<<"\n"<<indent<<" )";
-    }
-};
-
-struct CallNode : public Expression{
-    shared_ptr<Expression> callee;
-    vector<shared_ptr<Expression>> arguments;
-    CallNode(shared_ptr<Expression> callee, vector<shared_ptr<Expression>> arguments) : Expression(NodeType::CallNode), callee(callee),arguments(arguments){}
-    void print(int depth) const override{
-        string indent(3*depth,' ');
-        cout<<"\n"<<indent<<"FunctionCallNode( ";
-        callee->print(depth+1);
-        for(auto &argument : arguments){
-            argument->print(depth+1);
-        }
-        cout<<"\n"<<indent<<" )";
-    }
-};
-
-struct FunctionDeclarationNode : public Statement{
-    string name = "";
-    vector<string> parameters;
-    shared_ptr<Statement> body;
 };
 
 #endif
