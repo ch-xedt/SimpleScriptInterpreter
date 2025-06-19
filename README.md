@@ -153,6 +153,19 @@ if( x = y ){
 }
 ```
 
+With the Else statement, a code block can be executed if the condition is not met.
+
+```
+let x = 1;
+let y = 10;
+
+if( x > y ){
+  print("x is bigger than y");
+}else{
+  print("x is smaller than y");
+}
+```
+
 
 <br>
 
@@ -160,6 +173,7 @@ if( x = y ){
 ## Planned Features
 <br>
 
+- Loops
 - Support for objects
 - Nativ Functions
 - User defined Functions
@@ -170,20 +184,18 @@ if( x = y ){
 ## Example Code
 
 ```
+let y = "Your age is : ";
 let x = 16;
 x = x + 1;
+print( y + x );
+
+const isHuman = true;
+print("Are you a human: "+ isHuman);
 
 let w = x + 1;
-
 if( w > x ){
-  print(w);
-    // output: "18"
+  print(w + " is bigger than " + x);
+}else{
+  print(w + " is smaller than " + x);
 }
-
-let y = "You are : ";
-const z = " years old.";
-const isHuman = true;
-
-print( y + x + z + " Are you human: " + isHuman);
-  // output: "You are : 17 years old. Are you human: true"
 ```
