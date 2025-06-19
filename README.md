@@ -153,7 +153,7 @@ if( x = y ){
 }
 ```
 
-With the Else statement, a code block can be executed if the condition is not met.
+With the ELSE-Statements, a code block can be executed if the condition is not met.
 
 ```
 let x = 1;
