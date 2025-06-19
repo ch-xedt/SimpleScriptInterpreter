@@ -132,11 +132,35 @@ Support for floating point numbers will follow.
 <br>
 
 
+### **IF - Statements :**
+
+IF-Statements allow you to execute conditional statements. <br>
+If the given condition in the parentheses is true, the corresponding block is executed.
+```
+let x = 5;
+let y = 2;
+
+if( x > y ){
+  print("x is bigger than y");
+}
+
+if( x < y ){
+  print("x is smaller than y");
+}
+
+if( x = y ){
+  print("x is as big as y");
+}
+```
+
+
+<br>
+
+
 ## Planned Features
 <br>
 
-- Finish unfinished support for objects
-- Finish unfinished print support for objects
+- Support for objects
 - Nativ Functions
 - User defined Functions
 - User defined Comments
@@ -150,8 +174,11 @@ let x = 16;
 x = x + 1;
 
 let w = x + 1;
-print(w);
-  // output: "18"
+
+if( w > x ){
+  print(w);
+    // output: "18"
+}
 
 let y = "You are : ";
 const z = " years old.";
