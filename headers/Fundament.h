@@ -8,7 +8,7 @@
 class Fundament{
     private:
     public:
-        Fundament(){
+        Fundament(string filename){
             shared_ptr<Environment> environment = make_shared<Environment>();
             Reader reader;
             Parser parser;
@@ -17,7 +17,7 @@ class Fundament{
 
             environment->initEnvironment();
 
-            program=parser.produceAST(reader.readFile("../test.txt"));
+            program=parser.produceAST(reader.readFile("../"+filename));
             program.print(1); 
 
             shared_ptr<R_Value> lastResult = make_shared<NullValue>(); 

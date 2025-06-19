@@ -12,6 +12,7 @@ enum class TokenArt {
     Let,
     Const,
     Print,
+    Function,
     Number,
     Bool,
     Identifier,
@@ -24,6 +25,8 @@ enum class TokenArt {
     Quote,//"
     String,
     Semicolon,//;
+    Comma,//,
+    Dot,//.
     EndOfFile
 };
 
@@ -62,9 +65,13 @@ class Lexer{
                 case TokenArt::Equal: return "EqualToken"; 
                 case TokenArt::OpenParen: return "OpenParenToken";
                 case TokenArt::CloseParen: return "CloseParenToken";
+                case TokenArt::OpenBrace : return "OpenBraceToken";
+                case TokenArt::CloseBrace : return "CloseBraceToken";
                 case TokenArt::Quote: return "QuoteToken";
                 case TokenArt::String: return "StringToken";
                 case TokenArt::Semicolon: return "SemicolonToken";
+                case TokenArt::Comma: return "CommaToken";
+                case TokenArt::Dot: return "DotToken";
                 case TokenArt::EndOfFile: return "EndOfFileToken";
                 default: return "UnknownToken";
             } 
@@ -115,6 +122,12 @@ class Lexer{
                 }else if (source[0] == ';') {
                     tokens.push_back({ ";", TokenArt::Semicolon });
                     source.erase(0, 1); 
+                }else if (source[0] == ',') {
+                    tokens.push_back({ ",", TokenArt::Comma });
+                    source.erase(0, 1); 
+                }else if (source[0] == '.') {
+                    tokens.push_back({ ".", TokenArt::Dot });
+                    source.erase(0, 1); 
                 }else if (isAlpha(source[0])) {
                     string identifier = "";
                     while (!source.empty() && isAlpha(source[0])) {
@@ -137,15 +150,16 @@ class Lexer{
                 }else if (isSpace(source[0])) {
                     source.erase(0, 1);
                 }else{
-                    cerr << "\n[[WARNING]] : Invalid character: ' " << source[0] << " ' in sorce code.";
+                    cerr << "\n[[WARNING]] : Invalid character: ' " << source[0] << " ' in sorce code.\n";
+                    source.erase(0, 1);
+                    exit(1);
                 }
             }
             tokens.push_back({ "EOF", TokenArt::EndOfFile });
-            showTokens();
             return tokens;
         }
 
-        void showTokens(){
+        void print(){
             cout<<"\n------------------------ Tokens ------------------------\n ";
             for(int i = 0; i< tokens.size(); i++){
                 cout<<"\nType: "<<to_string(tokens[i].art)<<"  ------------  Value: "<<tokens[i].value;

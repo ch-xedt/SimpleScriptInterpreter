@@ -13,8 +13,6 @@
 using namespace std;
 
 class Environment;
-
-class Environment;
 void setupScope(shared_ptr<Environment> env) ;
 
 class Environment:public std::enable_shared_from_this<Environment>{
@@ -75,10 +73,10 @@ class Environment:public std::enable_shared_from_this<Environment>{
 
 };
 
-inline void setupScope(shared_ptr<Environment> enviroment){
-    enviroment->declareVariable("null", makeNullValue(), true);
-    enviroment->declareVariable("true", makeBoolValue(true), true);  
-    enviroment->declareVariable("false", makeBoolValue(false), true);
+inline void setupScope(shared_ptr<Environment> environment){
+    environment->declareVariable("null", makeNullValue(), true);
+    environment->declareVariable("true", makeBoolValue(true), true);  
+    environment->declareVariable("false", makeBoolValue(false), true);
 }
 
 

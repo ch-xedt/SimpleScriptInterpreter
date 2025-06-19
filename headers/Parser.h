@@ -4,6 +4,7 @@
 #include "Lexer.h"
 #include "AstNodes.h"
 #include <memory>
+#include <vector>
 
 class Parser{
     private:
@@ -85,10 +86,10 @@ class Parser{
         }
 
         shared_ptr<Expression> parseMultiplicativeBinary(){
-            shared_ptr<Expression> left = parsePrimitives();
+            shared_ptr<Expression> left = parseMemberExpression();
             while(notTheEnd() && (thisToken().value=="*" || thisToken().value=="/" || thisToken().value=="%")){
                 string operatorValue = thisEat().value;
-                shared_ptr<Expression> right = parsePrimitives();
+                shared_ptr<Expression> right = parseMemberExpression();
                 left=make_shared<BinaryNode>(left,right,operatorValue);
             } 
             return left;
@@ -162,12 +163,75 @@ class Parser{
 
             expect(TokenArt::CloseBrace, "}");
             return make_shared<ObjectNode>(properties);
-        };
+        }
+
+        shared_ptr<Expression> parseMemberExpression(){
+            shared_ptr<Expression> object = parsePrimitives();
+            while(thisToken().art == TokenArt::Dot || thisToken().art == TokenArt::OpenParen){
+                Token operatorToken = thisEat();
+                shared_ptr<Expression> property;
+                bool isComputedProperty = false;
+                if(operatorToken.art == TokenArt::Dot){
+                    isComputedProperty = false;
+                    property = parsePrimitives();
+                    if (property->node != NodeType::IdentifierNode) {
+                        cerr << "\n[[Stage]]: Parsing     [[ERROR]] : Invalid property access. Expected an identifier.";
+                        exit(1);
+                    }
+                }else {
+                    isComputedProperty = true;
+                    property = parseExpressions();
+                    expect(TokenArt::CloseParen, ")");
+                }
+                object = make_shared<MemberNode>(object, property, isComputedProperty);
+            }
+            return object;
+        }
+
+        shared_ptr<Expression> parseMemberCallExpression(){
+            shared_ptr<Expression> member = parseMemberExpression();
+            if(thisToken().art == TokenArt::OpenParen){
+                return parseCallExpression(member);
+            }
+            return member;
+        }
+
+        shared_ptr<Expression> parseCallExpression(shared_ptr<Expression> caller){
+            shared_ptr<Expression> callExpression = make_shared<CallNode>(caller, parseCallArguments());
+            if(thisToken().art == TokenArt::OpenParen){
+                callExpression = parseCallExpression(callExpression);
+            }
+            return callExpression;
+        }
+
+        vector<shared_ptr<Expression>> parseCallArguments(){
+            vector<shared_ptr<Expression>> args;
+            expect(TokenArt::OpenParen, "(");
+            if(thisToken().art == TokenArt::CloseParen){
+                return {};
+            }
+            args = parseFunctionArgumentsList();
+            expect(TokenArt::CloseParen, ")");
+            return args;
+        }
+
+        vector<shared_ptr<Expression>> parseFunctionArgumentsList(){
+            vector<shared_ptr<Expression>> args;
+            args.push_back(parseVariableAssignment());
+            while(thisToken().art == TokenArt::Comma){
+                thisEat();
+                args.push_back(parseVariableAssignment());
+            }
+            return args;
+        }
+
+
 
     public:
         Program produceAST(string source){
             lexer.setSource(source);
             tokens = lexer.tokenize();
+            lexer.print();
             while (notTheEnd()){
                 program.statements.push_back(parseStatements());
             }

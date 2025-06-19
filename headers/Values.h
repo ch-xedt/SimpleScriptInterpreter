@@ -6,15 +6,19 @@
 #include "cmath"
 #include "memory"
 #include "unordered_map"
+#include "functional"
+#include <algorithm>
 
 using namespace std;
+
+class Environment;
 
 enum class ValueType{
     NullValue,
     NumberValue,
     StringValue,
     BoolValue,
-    ObjectValue
+    ObjectValue,
 };
 
 struct R_Value{
@@ -70,7 +74,17 @@ struct ObjectValue:R_Value{
         }
         cout<<"\n )";
     }
+    string getAllProperties(){
+        string result = "";
+        for(auto& prop : properties){
+            result += prop.first + ", ";
+        }
+        return result;
+    }
 };
+
+
+
 
 inline shared_ptr<R_Value> makeNullValue(){
     return make_shared<NullValue>();

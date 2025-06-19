@@ -19,7 +19,10 @@ enum class NodeType{
     VariableAssignmentNode,
     PrintNode,
     PropertyNode,
-    ObjectNode
+    ObjectNode,
+    MemberNode,
+    CallNode,
+    FunctionDeclarationNode
 };
 
 struct Statement{
@@ -153,6 +156,39 @@ struct ObjectNode : public Expression{
     }
 };
 
+struct MemberNode : public Expression{
+    shared_ptr<Expression> object;
+    shared_ptr<Expression> property;
+    bool computed = false;
+    MemberNode(shared_ptr<Expression> object, shared_ptr<Expression> property, bool computed) : Expression(NodeType::MemberNode), object(object),property(property),computed(computed){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"MemberNode( computed = "<<computed;
+        object->print(depth+1);
+        property->print(depth+1);
+        cout<<"\n"<<indent<<" )";
+    }
+};
 
+struct CallNode : public Expression{
+    shared_ptr<Expression> callee;
+    vector<shared_ptr<Expression>> arguments;
+    CallNode(shared_ptr<Expression> callee, vector<shared_ptr<Expression>> arguments) : Expression(NodeType::CallNode), callee(callee),arguments(arguments){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"FunctionCallNode( ";
+        callee->print(depth+1);
+        for(auto &argument : arguments){
+            argument->print(depth+1);
+        }
+        cout<<"\n"<<indent<<" )";
+    }
+};
+
+struct FunctionDeclarationNode : public Statement{
+    string name = "";
+    vector<string> parameters;
+    shared_ptr<Statement> body;
+};
 
 #endif

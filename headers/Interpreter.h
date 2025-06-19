@@ -105,6 +105,12 @@ class Interpreter{
                 return evaluateCaseStringBooleanBinaryNode(binaryNode, dynamic_pointer_cast<BoolValue>(left), dynamic_pointer_cast<StringValue>(right));
             }else if(left->type == ValueType::StringValue && right -> type == ValueType::BoolValue){
                 return evaluateCaseStringBooleanBinaryNode(binaryNode, dynamic_pointer_cast<StringValue>(left), dynamic_pointer_cast<BoolValue>(right));
+            }else if(left->type == ValueType::StringValue && right -> type == ValueType::ObjectValue){
+                return evaluateCaseStringObjectBinaryNode(binaryNode, dynamic_pointer_cast<StringValue>(left), dynamic_pointer_cast<ObjectValue>(right));
+            }else if(left->type == ValueType::ObjectValue && right -> type == ValueType::StringValue){
+                return evaluateCaseStringObjectBinaryNode(binaryNode, dynamic_pointer_cast<ObjectValue>(left), dynamic_pointer_cast<StringValue>(right));
+            }else if(left->type == ValueType::NumberValue && right -> type == ValueType::ObjectValue){
+                return evaluateCaseNumericObjectBinaryNode(binaryNode, dynamic_pointer_cast<NumberValue>(left), dynamic_pointer_cast<ObjectValue>(right));
             }else{
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid binary operator / Case not found " <<binaryNode->op<<" \n";
                 exit(1);
@@ -198,6 +204,56 @@ class Interpreter{
             return result;
         }
 
+        shared_ptr<R_Value> evaluateCaseStringObjectBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<StringValue> left, shared_ptr<ObjectValue> right){
+            shared_ptr<StringValue> result = make_shared<StringValue>();
+
+            if(binaryNode->op == "+"){
+                result->value = left->value + right->getAllProperties();
+            }else{
+                result->value = left->value + right->getAllProperties();
+            }
+
+            return result;
+
+        }
+
+        shared_ptr<R_Value> evaluateCaseStringObjectBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<ObjectValue> left, shared_ptr<StringValue> right){
+            shared_ptr<StringValue> result = make_shared<StringValue>();
+
+            if(binaryNode->op == "+"){
+                result->value = left->getAllProperties() + right->value;
+            }else{
+                result->value = left->getAllProperties() + right->value;
+            }
+
+            return result;
+
+        }
+
+        shared_ptr<R_Value> evaluateCaseNumericObjectBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<NumberValue> left, shared_ptr<ObjectValue> right){
+            shared_ptr<StringValue> result = make_shared<StringValue>();
+
+            if(binaryNode->op == "+"){
+                result->value = to_string(left->value) +" "+ right->getAllProperties();
+            }else{
+                result->value = to_string(left->value) +" "+ right->getAllProperties();
+            }
+
+            return result;
+        }
+
+        shared_ptr<R_Value> evaluateCaseNumericObjectBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<ObjectValue> left, shared_ptr<NumberValue> right){
+            shared_ptr<StringValue> result = make_shared<StringValue>();
+
+            if(binaryNode->op == "+"){
+                result->value = left->getAllProperties() + to_string(right->value);
+            }else{
+                result->value = left->getAllProperties() + to_string(right->value);
+            }
+
+            return result;
+        }
+
         shared_ptr<R_Value> evaluateVariableDeclarationNode(shared_ptr<VariableDeclarationNode> variableDeclarationNode,shared_ptr<Environment> environment){
             shared_ptr<R_Value> result = variableDeclarationNode->value ? evaluate(variableDeclarationNode->value, environment) : makeNullValue();
             return environment->declareVariable(variableDeclarationNode->name,result,variableDeclarationNode->IsConstant);
@@ -233,6 +289,7 @@ class Interpreter{
             }
             return objectValue;
         };
+
 
 };
 
