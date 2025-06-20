@@ -234,13 +234,17 @@ class Interpreter{
         shared_ptr<R_Value> evaluateIfNode(shared_ptr<IfNode> ifNode, shared_ptr<Environment> environment){
             shared_ptr<R_Value> condition = evaluate(ifNode->condition,environment);
             if(dynamic_pointer_cast<BoolValue>(condition)->value == true){
+                shared_ptr<Environment> env = make_shared<Environment>(environment);
+                env->initEnvironment();
                 for (auto& statement : ifNode->ifBody){
-                    evaluate(statement,environment);
+                    evaluate(statement,env);
                 }
                 return makeNullValue();
             }else {
+                shared_ptr<Environment> env = make_shared<Environment>(environment);
+                env->initEnvironment();
                 for (auto& statement : ifNode->elseBody){
-                    evaluate(statement,environment);
+                    evaluate(statement,env);
                 }
                 return makeNullValue();
             }
@@ -261,14 +265,16 @@ class Interpreter{
             }else if (left->type == ValueType::StringValue && right->type == ValueType::StringValue) {
                 if(conditionalNode->conditionOperator == "="){
                     result->value = dynamic_pointer_cast<StringValue>(left)->value == dynamic_pointer_cast<StringValue>(right)->value;
+                }else{
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid conditional operator ("<<conditionalNode->conditionOperator<<") for String-Values\n";
+                    exit(1);
                 }
             }else if (left->type == ValueType::BoolValue && right->type == ValueType::BoolValue){
-                if(conditionalNode->conditionOperator == ">"){
-                    result->value = dynamic_pointer_cast<BoolValue>(left)->value > dynamic_pointer_cast<BoolValue>(right)->value;
-                }else if (conditionalNode->conditionOperator == "<") {
-                    result->value = dynamic_pointer_cast<BoolValue>(left)->value < dynamic_pointer_cast<BoolValue>(right)->value;
-                }else if (conditionalNode->conditionOperator == "=") {
+                if (conditionalNode->conditionOperator == "=") {
                     result->value = dynamic_pointer_cast<BoolValue>(left)->value == dynamic_pointer_cast<BoolValue>(right)->value;
+                }else{
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid conditional operator ("<<conditionalNode->conditionOperator<<") for Boolean-Values\n";
+                    exit(1);
                 }
             }else {
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid conditional operation between different values\n";

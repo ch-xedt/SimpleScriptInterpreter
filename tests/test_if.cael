@@ -1,16 +1,17 @@
-let x = 5;
-let y = 2;
+let x = 1;
+let w = x + 1;
 
-if( x < y ){
-    print("x is smaller than y");
+if( w < x ){
+  print(w + " is smaller than " + x);
 }else{
-    print("x is bigger than y");
+  if(w = x){
+    print("w as big as x");
+  }else{
+    let f = 2;
+    if(w>x){
+      let s = 12;
+      print("w bigger than x"+f);
+    }
+  }
 }
 
-let run = true;
-
-if(run = true){
-    print("is running");
-}else{
-    print("is not running");
-}
