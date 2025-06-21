@@ -20,6 +20,7 @@ enum class NodeType{
     PrintNode,
     ConditionalNode,
     IfNode,
+    ForNode,
 };
 
 struct Statement{
@@ -153,6 +154,26 @@ struct IfNode : public Statement{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"IfNode( ";
         condition->print(depth+1);
+        cout<<"\n"<<indent<<")";
+    }
+};
+
+struct ForNode : public Statement{
+    shared_ptr<Statement> initializer;
+    shared_ptr<Expression> condition;
+    shared_ptr<Statement> increment;
+    vector<shared_ptr<Statement>> forBody;
+    ForNode(shared_ptr<Statement> Initializer, shared_ptr<Expression> Condition, shared_ptr<Statement> Increment, vector<shared_ptr<Statement>> ForBody) : Statement(NodeType::ForNode), initializer(Initializer), condition(Condition), increment(Increment), forBody(ForBody){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"ForNode( ";
+        initializer->print(depth+1);
+        condition->print(depth+1);
+        increment->print(depth+1);
+        cout<<"\n"<<indent<<indent<<"ForBody:";
+        for(auto &statement : forBody){
+            statement->print(depth+3);
+        }
         cout<<"\n"<<indent<<")";
     }
 };

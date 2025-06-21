@@ -14,7 +14,7 @@ enum class TokenArt {
     Print,
     If,
     Else,
-    Function,
+    For,
     Number,
     Bool,
     Identifier,
@@ -40,6 +40,7 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"print", TokenArt::Print},
     {"if", TokenArt::If},
     {"else", TokenArt::Else},
+    {"for", TokenArt::For}
 };
 
 struct Token {

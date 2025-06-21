@@ -166,14 +166,31 @@ if( x > y ){
 }
 ```
 
+<br>
+
+
+### **FOR-Loops :**
+FOR-Loops allow you to execute a code block multiple times.<br>
+The loop will be executed as long as the given condition stays true.
+
+```
+for(let i = 0; i < 10; i = i + 1;){
+  print(i + "");
+}
+```
+Whether the condition is true is checked each time the code block is executed.
+
 
 <br>
+
+
 
 
 ## Planned Features
 <br>
 
-- Loops
+- Support for user inputs
+- Support for floating-points
 - Support for objects
 - Nativ Functions
 - User defined Functions
@@ -197,5 +214,15 @@ if( w > x ){
   print(w + " is bigger than " + x);
 }else{
   print(w + " is smaller than " + x);
+}
+
+print("You got : ");
+
+for (let i = 0; i < 10; i = i+1;){
+    if(i = 1){
+        print("" + i + " strawberry");
+    }else{
+        print("" + i + " strawberries");
+    }
 }
 ```

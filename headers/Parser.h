@@ -46,6 +46,8 @@ class Parser{
                     return parsePrint();
                 case TokenArt::If:
                     return parseIf();
+                case TokenArt::For:
+                    return parseFor();
                 default:
                     return parseExpressions();
             }
@@ -168,6 +170,23 @@ class Parser{
                 return make_shared<IfNode>(condition, ifBody, elseBody);
             }
             return make_shared<IfNode>(condition, ifBody);
+        }
+
+        shared_ptr<Statement> parseFor(){
+            thisEat();
+            expect(TokenArt::OpenParen, "(");
+            shared_ptr<Statement> initializer = parseVariableDeclaration(false);
+            shared_ptr<Expression> condition = parseConditional();
+            expect(TokenArt::Semicolon, ";");
+            shared_ptr<Statement> increment = parseVariableAssignment();
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::OpenBrace, "{");
+            vector<shared_ptr<Statement>> forBody;
+            while(notTheEnd() && thisToken().art!= TokenArt::CloseBrace){
+                forBody.push_back(parseStatements());
+            }
+            expect(TokenArt::CloseBrace, "}");
+            return make_shared<ForNode>(initializer, condition, increment, forBody);
         }
         
 

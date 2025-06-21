@@ -64,6 +64,11 @@ class Interpreter{
                         shared_ptr<ConditionalNode> conditionalNode = dynamic_pointer_cast<ConditionalNode>(astNode);
                         return evaluateConditionalNode(conditionalNode,environment);
                     }
+                case NodeType::ForNode:
+                    {
+                        shared_ptr<ForNode> forNode = dynamic_pointer_cast<ForNode>(astNode);
+                        return evaluateForNode(forNode,environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -281,6 +286,24 @@ class Interpreter{
                 exit(1);
             }
             return result;
+        }
+
+        shared_ptr<R_Value>evaluateForNode(shared_ptr<ForNode> forNode, shared_ptr<Environment> environment){
+                shared_ptr<Environment> env = make_shared<Environment>(environment);
+                env->initEnvironment();
+                shared_ptr<VariableDeclarationNode> variableDeclNode = dynamic_pointer_cast<VariableDeclarationNode>(forNode->initializer);
+                shared_ptr<R_Value> initVar = evaluateVariableDeclarationNode(variableDeclNode,env);
+                shared_ptr<ConditionalNode> conditionNode = dynamic_pointer_cast<ConditionalNode>(forNode->condition);
+                shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
+                while(dynamic_pointer_cast<BoolValue>(condition)->value == true){
+                    for (auto& statement : forNode->forBody){
+                        evaluate(statement,env);
+                    }
+                    shared_ptr<VariableAssignmentNode> incrementNode = dynamic_pointer_cast<VariableAssignmentNode>(forNode->increment);
+                    evaluateVariableAssignmentNode(incrementNode, env);
+                    condition = evaluateConditionalNode(conditionNode, env);
+                }
+                return makeNullValue();
         }
 
 };
