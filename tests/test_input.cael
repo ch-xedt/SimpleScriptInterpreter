@@ -1,0 +1,18 @@
+print("Input a Num: ");
+let myNum = 0;
+in(myNum, n);
+print("Your Input is : " + myNum);
+
+print("Input a String : ");
+let myString = "";
+in(myString, s);
+print("Your Input is : " + myString);
+
+print("Input a Bool (true/false) : ");
+let myBool = "";
+in(myBool, b);
+print("Your Input is : " + myBool);
+
+if(myBool = true){
+    print("strawberry");
+}

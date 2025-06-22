@@ -48,6 +48,8 @@ class Parser{
                     return parseIf();
                 case TokenArt::For:
                     return parseFor();
+                case TokenArt::Input:
+                    return parseInput();
                 default:
                     return parseExpressions();
             }
@@ -187,6 +189,17 @@ class Parser{
             }
             expect(TokenArt::CloseBrace, "}");
             return make_shared<ForNode>(initializer, condition, increment, forBody);
+        }
+
+        shared_ptr<Statement> parseInput(){
+            thisEat();
+            expect(TokenArt::OpenParen, "(");
+            string variableName = expect(TokenArt::Identifier, "Identifier VariableName").value;
+            expect(TokenArt::Comma, ",");
+            string inputType = expect(TokenArt::Identifier, "Identifier InputType s/n/b").value;
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<InputNode>(variableName, inputType);
         }
         
 

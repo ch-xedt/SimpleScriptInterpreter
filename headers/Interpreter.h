@@ -5,7 +5,9 @@
 #include "AstNodes.h"
 #include "Environment.h"
 #include <cstdlib>
+#include <iostream>
 #include <memory>
+#include <string>
 
 using namespace std;
 
@@ -68,6 +70,11 @@ class Interpreter{
                     {
                         shared_ptr<ForNode> forNode = dynamic_pointer_cast<ForNode>(astNode);
                         return evaluateForNode(forNode,environment);
+                    }
+                case NodeType::InputNode:
+                    {
+                        shared_ptr<InputNode> inputNode = dynamic_pointer_cast<InputNode>(astNode);
+                        return evaluateInputNode(inputNode,environment);
                     }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
@@ -303,6 +310,38 @@ class Interpreter{
                     evaluateVariableAssignmentNode(incrementNode, env);
                     condition = evaluateConditionalNode(conditionNode, env);
                 }
+                return makeNullValue();
+        }
+
+        shared_ptr<R_Value> evaluateInputNode(shared_ptr<InputNode> inputNode, shared_ptr<Environment> environment){
+            if(inputNode->inputType == "n"){
+                int input;
+                cin>>input;
+                shared_ptr<R_Value> inputValue = makeNumberValue(input);
+                environment->assignVariable(inputNode->variableName, inputValue );
+            }else if(inputNode->inputType == "s"){
+                string input;
+                cin.ignore();
+                getline(cin,input);
+                shared_ptr<R_Value> inputValue = makeStringValue(input);
+                environment->assignVariable(inputNode->variableName, inputValue );
+            }else if(inputNode->inputType == "b"){
+                string input;
+                cin>>input;
+                if(input == "true"){
+                    shared_ptr<R_Value> inputValue = makeBoolValue(true);
+                    environment->assignVariable(inputNode->variableName, inputValue );
+                }else if(input == "false") {
+                    shared_ptr<R_Value> inputValue = makeBoolValue(false);
+                    environment->assignVariable(inputNode->variableName, inputValue );
+                }else {
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Input type does not match -- Boolean\n";
+                    exit(1);
+                }
+            }else{
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid input type ("<<inputNode->inputType<<") for ("<< inputNode->variableName<<")\n";
+                exit(1);
+            }
                 return makeNullValue();
         }
 

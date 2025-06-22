@@ -15,8 +15,8 @@ enum class TokenArt {
     If,
     Else,
     For,
+    Input,
     Number,
-    Bool,
     Identifier,
     Equal,//=
     BinaryOperator,//+,-,*,/,%,
@@ -40,7 +40,8 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"print", TokenArt::Print},
     {"if", TokenArt::If},
     {"else", TokenArt::Else},
-    {"for", TokenArt::For}
+    {"for", TokenArt::For},
+    {"in", TokenArt::Input},
 };
 
 struct Token {

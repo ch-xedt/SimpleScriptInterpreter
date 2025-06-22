@@ -21,6 +21,7 @@ enum class NodeType{
     ConditionalNode,
     IfNode,
     ForNode,
+    InputNode,
 };
 
 struct Statement{
@@ -175,6 +176,16 @@ struct ForNode : public Statement{
             statement->print(depth+3);
         }
         cout<<"\n"<<indent<<")";
+    }
+};
+
+struct InputNode : public Statement{
+    string variableName = "";
+    string inputType = "";
+    InputNode(string variableName, string inputType) : Statement(NodeType::InputNode), variableName(variableName), inputType(inputType){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"InputNode( "<<variableName<<" , "<<inputType<<" )";
     }
 };
 

@@ -184,6 +184,21 @@ Whether the condition is true is checked each time the code block is executed.
 <br>
 
 
+### **USER-INPUT :**
+
+By using the `in` - function you can get user inputs
+
+```
+let user_name = "";
+in(user_name, s);
+print("Hello " + user_name)
+```
+The `in` - function receives a variable and an input type as arguments.<br>
+The input type specifies what kind of value the variable should store. <br>
+Numbers are specified with `n`, strings with `s`, and Booleans with `b`.
+
+
+<br>
 
 
 ## Planned Features
@@ -201,20 +216,31 @@ Whether the condition is true is checked each time the code block is executed.
 ## Example Code
 
 ```
-let y = "Your age is : ";
+const y = "Your age is : ";
 let x = 16;
 x = x + 1;
 print( y + x );
 
-const isHuman = true;
-print("Are you a human: "+ isHuman);
+
+let isHuman = false;
+print("Are you a human? (true/false): ");
+in(isHuman, b);
+
+if(isHuman = true){
+  print("Hello Human!);
+}else{
+  print("You are not a human!");
+}
+
 
 let w = x + 1;
+
 if( w > x ){
   print(w + " is bigger than " + x);
 }else{
   print(w + " is smaller than " + x);
 }
+
 
 print("You got : ");
 
@@ -226,3 +252,4 @@ for (let i = 0; i < 10; i = i+1;){
     }
 }
 ```
+<br>
