@@ -204,7 +204,7 @@ Numbers are specified with `n`, strings with `s`, and Booleans with `b`.
 ## Planned Features
 <br>
 
-- Support for user inputs
+
 - Support for floating-points
 - Support for objects
 - Nativ Functions
