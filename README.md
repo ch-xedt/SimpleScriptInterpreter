@@ -186,7 +186,7 @@ Whether the condition is true is checked each time the code block is executed.
 
 ### **USER-INPUT :**
 
-By using the `in` - function you can get user inputs
+By using the `in` - function you can get user inputs.
 
 ```
 let user_name = "";
