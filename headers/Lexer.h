@@ -67,6 +67,10 @@ class Lexer{
                 case TokenArt::Let: return "LetToken";
                 case TokenArt::Const: return "ConstToken";
                 case TokenArt::Print: return "PrintToken";
+                case TokenArt::If: return "IfToken";
+                case TokenArt::Else: return "ElseToken";
+                case TokenArt::For: return "ForToken";
+                case TokenArt::Input: return "InputToken";
                 case TokenArt::Number: return "NumberToken";
                 case TokenArt::Identifier: return "IdentifierToken";
                 case TokenArt::BinaryOperator: return "BinaryOperatorToken";
