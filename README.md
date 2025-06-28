@@ -184,7 +184,7 @@ Whether the condition is true is checked each time the code block is executed.
 <br>
 
 
-### **USER-INPUT :**
+### **User-INPUT :**
 
 By using the `in` - function you can get user inputs.
 
@@ -201,55 +201,82 @@ Numbers are specified with `n`, strings with `s`, and Booleans with `b`.
 <br>
 
 
-## Planned Features
+### **FUNCTIONS :**
+
+Functions allow you to define reusable code blocks that can be called with different parameters. <br>
+A function is defined using the `function` keyword, followed by the function name, parameters in parentheses, and the code block in curly braces.<br>
+Functions are called using the `call` keyword and can return values using the `return` expression, helping to structure code while avoiding repetition.
+
+
+```
+function add(x, y){
+  print("You are adding" + x + " and " + y);
+  return x + y; 
+}
+
+let sum = call add(1, 2);
+
+print("The sum of 1 and 2 is: " + sum);
+```
+
+
 <br>
+
+
+## Planned Features
 
 
 - Support for floating-points
 - Support for objects
 - Nativ Functions
-- User defined Functions
 - User defined Comments
 
+
 <br>
+
 
 ## Example Code
 
 ```
-const y = "Your age is : ";
-let x = 16;
-x = x + 1;
-print( y + x );
+function exampleFunction(){
+  const y = "Your age is : ";
+  let x = 16;
+  x = x + 1;
+  print( y + x );
 
 
-let isHuman = false;
-print("Are you a human? (true/false): ");
-in(isHuman, b);
+  let isHuman = false;
+  print("Are you a human? (true/false): ");
+  in(isHuman, b);
 
-if(isHuman = true){
-  print("Hello Human!);
-}else{
-  print("You are not a human!");
+  if(isHuman = true){
+    print("Hello Human!);
+  }else{
+    print("You are not a human!");
+  }
+
+
+  let w = x + 1;
+
+  if( w > x ){
+    print(w + " is bigger than " + x);
+  }else{
+    print(w + " is smaller than " + x);
+  }
+
+
+  print("You got : ");
+
+  for (let i = 0; i < 10; i = i+1;){
+      if(i = 1){
+          print("" + i + " strawberry");
+      }else{
+          print("" + i + " strawberries");
+      }
+  }
 }
 
+call exampleFunction();
 
-let w = x + 1;
-
-if( w > x ){
-  print(w + " is bigger than " + x);
-}else{
-  print(w + " is smaller than " + x);
-}
-
-
-print("You got : ");
-
-for (let i = 0; i < 10; i = i+1;){
-    if(i = 1){
-        print("" + i + " strawberry");
-    }else{
-        print("" + i + " strawberries");
-    }
-}
 ```
 <br>

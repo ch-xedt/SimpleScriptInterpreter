@@ -16,6 +16,9 @@ enum class TokenArt {
     Else,
     For,
     Input,
+    Function,
+    Call,
+    Return,
     Number,
     Identifier,
     Equal,//=
@@ -42,6 +45,9 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"else", TokenArt::Else},
     {"for", TokenArt::For},
     {"in", TokenArt::Input},
+    {"function", TokenArt::Function},
+    {"call", TokenArt::Call},
+    {"return", TokenArt::Return},
 };
 
 struct Token {
@@ -71,6 +77,9 @@ class Lexer{
                 case TokenArt::Else: return "ElseToken";
                 case TokenArt::For: return "ForToken";
                 case TokenArt::Input: return "InputToken";
+                case TokenArt::Function: return "FunctionToken";
+                case TokenArt::Call: return "CallToken";
+                case TokenArt::Return: return "ReturnToken";
                 case TokenArt::Number: return "NumberToken";
                 case TokenArt::Identifier: return "IdentifierToken";
                 case TokenArt::BinaryOperator: return "BinaryOperatorToken";

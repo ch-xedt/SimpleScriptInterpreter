@@ -22,6 +22,9 @@ enum class NodeType{
     IfNode,
     ForNode,
     InputNode,
+    FunctionDeclarationNode,
+    CallNode,
+    ReturnNode,
 };
 
 struct Statement{
@@ -186,6 +189,55 @@ struct InputNode : public Statement{
     void print(int depth) const override{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"InputNode( "<<variableName<<" , "<<inputType<<" )";
+    }
+};
+
+struct FunctionDeclarationNode : public Statement{
+    string functionName = "";
+    vector<string> parameters;
+    vector<shared_ptr<Statement>> functionBody;
+    FunctionDeclarationNode(string functionName, vector<string> parameters, vector<shared_ptr<Statement>> functionBody) : Statement(NodeType::FunctionDeclarationNode), functionName(functionName), parameters(parameters), functionBody(functionBody){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"FunctionNode(";
+        cout<<"\n"<<indent<<indent<<"(Name:"<<functionName<<")";
+        cout<<"\n"<<indent<<indent<<"(Parameters: ";
+        for(auto &parameter : parameters){
+            cout<<parameter<<", ";
+        }
+        cout<<")";
+        cout<<"\n"<<indent<<indent<<"(Body: ";
+        for(auto &statement : functionBody){
+            statement->print(depth+3);
+        }
+        cout<<"\n"<<indent<<indent<<")";
+        cout<<"\n"<<indent<<")";
+    }
+};
+
+struct CallNode : public Expression{
+    string functionName = "";
+    vector<shared_ptr<Expression>> arguments;
+
+    CallNode(string functionName, vector<shared_ptr<Expression>> arguments) : Expression(NodeType::CallNode), functionName(functionName), arguments(arguments){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"CallNode( (Name:"<<functionName<<") (Arguments: ";
+        for(auto &argument : arguments){
+            argument->print(depth+1);
+        }
+        cout<<"\n"<<indent<<")";
+    }
+};
+
+struct ReturnNode : public Expression{
+    shared_ptr<Expression> returnValueExpression;
+    ReturnNode(shared_ptr<Expression> returnValueExpression) : Expression(NodeType::ReturnNode), returnValueExpression(returnValueExpression){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"ReturnNode( ";
+        returnValueExpression->print(depth+1);
+        cout<<"\n"<<indent<<")";
     }
 };
 

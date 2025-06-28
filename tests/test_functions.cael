@@ -1,0 +1,11 @@
+function tellMeYourAge(age){
+    print("Your current age this year is : " + age + ".");
+    let youWillBe = age + 1;
+    return youWillBe;
+}
+
+let userAge = 0;
+in(userAge, n);
+let yourNextAge = call tellMeYourAge(userAge);
+
+print("You will be " + yourNextAge + " next year.");

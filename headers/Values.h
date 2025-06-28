@@ -1,13 +1,14 @@
 #ifndef VALUES_H_v1
 #define VALUES_H_v1
 
+#include "AstNodes.h"
 #include "iostream"
 #include "string"
 #include "cmath"
 #include "memory"
 #include "unordered_map"
 #include "functional"
-#include <algorithm>
+#include "algorithm"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ enum class ValueType{
     NumberValue,
     StringValue,
     BoolValue,
-    ObjectValue,
+    FunctionValue,
 };
 
 struct R_Value{
@@ -63,23 +64,15 @@ struct BoolValue:R_Value{
     }
 };
 
-struct ObjectValue:R_Value{
-    unordered_map<string, shared_ptr<R_Value>> properties;
-    ObjectValue():R_Value(ValueType::ObjectValue){}
+struct FunctionValue:R_Value{
+    string functionName = "";
+    vector<string> parameters;
+    vector<shared_ptr<Statement>> body;
+    shared_ptr<Environment> env;
+    FunctionValue():R_Value(ValueType::FunctionValue){}
+    FunctionValue(string name, vector<string> params, vector<shared_ptr<Statement>> bdy, shared_ptr<Environment> env):R_Value(ValueType::FunctionValue),functionName(name),parameters(params),body(bdy),env(env){}
     void print() const override{
-        cout<<"\n ObjectValue ( ";
-        for(auto& prop : properties){
-            cout<<"\n "<<prop.first<<" : ";
-            prop.second->print();
-        }
-        cout<<"\n )";
-    }
-    string getAllProperties(){
-        string result = "";
-        for(auto& prop : properties){
-            result += prop.first + ", ";
-        }
-        return result;
+        cout<<"\n FunctionValue ( "<<functionName<<" )";
     }
 };
 
@@ -98,7 +91,9 @@ inline shared_ptr<R_Value> makeStringValue(string val){
 inline shared_ptr<R_Value> makeBoolValue(bool val){
     return make_shared<BoolValue>(val);
 }
-
+inline shared_ptr<R_Value> makeFunctionValue(string name, vector<string> params, vector<shared_ptr<Statement>> bdy, shared_ptr<Environment> env){
+    return make_shared<FunctionValue>(name, params, bdy, env);
+}
 
 
 #endif

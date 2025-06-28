@@ -76,6 +76,21 @@ class Interpreter{
                         shared_ptr<InputNode> inputNode = dynamic_pointer_cast<InputNode>(astNode);
                         return evaluateInputNode(inputNode,environment);
                     }
+                case NodeType::FunctionDeclarationNode:
+                    {
+                        shared_ptr<FunctionDeclarationNode> inputNode = dynamic_pointer_cast<FunctionDeclarationNode>(astNode);
+                        return evaluateFunctionDeclarationNode(inputNode,environment);
+                    }
+                case NodeType::CallNode:
+                    {
+                        shared_ptr<CallNode> callNode = dynamic_pointer_cast<CallNode>(astNode);
+                        return evaluateCallNode(callNode,environment);
+                    }
+                case NodeType::ReturnNode:
+                    {
+                        shared_ptr<ReturnNode> returnNode = dynamic_pointer_cast<ReturnNode>(astNode);
+                        return evaluateReturnNode(returnNode,environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -343,6 +358,47 @@ class Interpreter{
                 exit(1);
             }
                 return makeNullValue();
+        }
+
+        shared_ptr<R_Value> evaluateFunctionDeclarationNode(shared_ptr<FunctionDeclarationNode> functionNode, shared_ptr<Environment> environment){
+            shared_ptr<FunctionValue> functionValue = make_shared<FunctionValue>();
+            functionValue->functionName = functionNode->functionName;
+            functionValue->parameters = functionNode->parameters;
+            functionValue->body = functionNode->functionBody;
+            functionValue->env = environment;
+            return environment->declareVariable(functionNode->functionName,functionValue,true);
+        }
+
+        shared_ptr<R_Value> evaluateCallNode(shared_ptr<CallNode> callNode, shared_ptr<Environment> environment){
+            shared_ptr<FunctionValue> functionValue = dynamic_pointer_cast<FunctionValue>(environment->lookupVariable(callNode->functionName));
+            if(functionValue->parameters.size() != callNode->arguments.size()){
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid number of arguments for function call\n";
+                exit(1);
+            }
+            shared_ptr<Environment> functionEnvironment = make_shared<Environment>(functionValue->env);
+            for(int i = 0; i < functionValue->parameters.size(); i++){
+                functionEnvironment->declareVariable(functionValue->parameters[i],evaluate(callNode->arguments[i],environment),false);
+            }
+
+            shared_ptr<R_Value> returnValue = makeNullValue();
+
+            for(auto& statement : functionValue->body){
+                if(statement->node == NodeType::ReturnNode){
+                    returnValue = evaluate(statement,functionEnvironment);
+                    break;
+                }else{
+                    evaluate(statement,functionEnvironment);
+                }
+            }
+            return returnValue;
+        }
+
+        shared_ptr<R_Value> evaluateReturnNode(shared_ptr<ReturnNode> returnNode, shared_ptr<Environment> environment){
+            if(returnNode->returnValueExpression != nullptr){
+                return evaluate(returnNode->returnValueExpression,environment);
+            }else{
+                return makeNullValue();
+            }
         }
 
 };

@@ -50,6 +50,12 @@ class Parser{
                     return parseFor();
                 case TokenArt::Input:
                     return parseInput();
+                case TokenArt::Function:
+                    return parseFunction();
+                case TokenArt::Call:
+                    return parseFunctionCall();
+                case TokenArt::Return:
+                    return parseReturn();
                 default:
                     return parseExpressions();
             }
@@ -113,18 +119,29 @@ class Parser{
                 return make_shared<VariableDeclarationNode>(variableName, nullptr, isConst);
             }
             expect(TokenArt::Equal, "=");
-            shared_ptr<Expression> value = parseExpressions();
-            expect(TokenArt::Semicolon, ";");
-            return make_shared<VariableDeclarationNode>(variableName, value, isConst);
+
+            if(thisToken().art == TokenArt::Call){
+                shared_ptr<Expression> assignValue = parseFunctionCall();
+                return make_shared<VariableDeclarationNode>(variableName, assignValue, isConst);
+            }else{
+                shared_ptr<Expression> assignValue = parseExpressions();
+                expect(TokenArt::Semicolon, ";");
+                return make_shared<VariableDeclarationNode>(variableName, assignValue, isConst);
+            }
         }
 
         shared_ptr<Expression> parseVariableAssignment(){
             shared_ptr<Expression> left = parseAdditivBinary();
             if(notTheEnd() && thisToken().art== TokenArt::Equal){
                 thisEat();
-                shared_ptr<Expression> assignValue = parseAdditivBinary();
-                expect(TokenArt::Semicolon, ";");
-                return make_shared<VariableAssignmentNode>(left, assignValue);
+                if(thisToken().art == TokenArt::Call){
+                    shared_ptr<Expression> assignValue = parseFunctionCall();
+                    return make_shared<VariableAssignmentNode>(left, assignValue);	
+                }else{
+                    shared_ptr<Expression> assignValue = parseAdditivBinary();
+                    expect(TokenArt::Semicolon, ";");
+                    return make_shared<VariableAssignmentNode>(left, assignValue);
+                }
             }
             return left;
         }
@@ -202,6 +219,49 @@ class Parser{
             return make_shared<InputNode>(variableName, inputType);
         }
         
+        shared_ptr<Statement> parseFunction(){
+            thisEat();
+            string functionName = expect(TokenArt::Identifier, "Identifier FunctionName").value;
+            expect(TokenArt::OpenParen, "(");
+            vector<string> parameters;
+            while(notTheEnd() && thisToken().art != TokenArt::CloseParen){
+                parameters.push_back(expect(TokenArt::Identifier, "Identifier ParameterName").value);
+                if(notTheEnd() && thisToken().art != TokenArt::CloseParen){
+                    expect(TokenArt::Comma, ",");
+                }
+            }
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::OpenBrace, "{");
+            vector<shared_ptr<Statement>> functionBody;
+            while(notTheEnd() && thisToken().art!= TokenArt::CloseBrace){
+                functionBody.push_back(parseStatements());
+            }
+            expect(TokenArt::CloseBrace, "}");
+            return make_shared<FunctionDeclarationNode>(functionName, parameters, functionBody);
+        }
+
+        shared_ptr<Expression> parseFunctionCall(){
+            thisEat();
+            string functionName = expect(TokenArt::Identifier, "Identifier FunctionName").value;
+            expect(TokenArt::OpenParen, "(");
+            vector<shared_ptr<Expression>> arguments;
+            while(notTheEnd() && thisToken().art!= TokenArt::CloseParen){
+                arguments.push_back(parseExpressions());
+                if(notTheEnd() && thisToken().art!= TokenArt::CloseParen){
+                    expect(TokenArt::Comma, ",");
+                }
+            }
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<CallNode>(functionName, arguments);
+        }
+
+        shared_ptr<Expression> parseReturn(){
+            thisEat();
+            shared_ptr<Expression> returnValue = parseExpressions();
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<ReturnNode>(returnValue);
+        }
 
     public:
         Program produceAST(string source){
