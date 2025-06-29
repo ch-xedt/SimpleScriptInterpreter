@@ -12,7 +12,7 @@ A custom programming language interpreter written in C++
 <br>
 
 
-### **Variable declaration and assignment:**
+### **Variable DECLARATION and ASSIGNMENT:**
 
 Variables can be declared with the `let` - keyword.
 
@@ -26,13 +26,13 @@ Constant variables cannot be reassigned.
 
 
 ```
-const pi = 31415/10000;
+const pi = 3.1415;
 ```
 
 <br>
 
 
-### **Data types and values :**
+### **Data TYPES and VALUES :**
 
 The type of the variable is determined automatically and can therefore change during runtime, unless it`s a constant variable.
 
@@ -41,19 +41,20 @@ let x = "Hello World";        // String-type
 x = 0;                        // Integer-type
 ```
 
-Variables can take integer values, string values, boolean values ​​or null values.
+Variables can take integer values, float values ,string values, boolean values ​​or null values.
 
 ```
 let x = 0;                    // Integer value
-let y = "Hello World!";       // String value
-let z = true;                 // Boolean value
-let q = null;                 // Null value
+let y = 0.0;                  // Float value
+let z = "Hello World!";       // String value
+let q = true;                 // Boolean value
+let w = null;                 // Null value
 ```
 
 <br>
 
 
-### **Binary operations :**
+### **BINARY operations :**
 
 Binary operations such as addition, subtraction, multiplication, division, and modulo are supported.<br>
 The arithmetic follows the usual arithmetic rules. Pemdas. <br>
@@ -87,7 +88,7 @@ z = "That is " + isItTrue;            // "That is true"
 <br>
 
 
-### **Print :**
+### **PRINT :**
 Print something to the terminal window using the `print` - function.
 
 ```
@@ -109,24 +110,6 @@ You can also print expressions.
 ```
 print("It`s" + (2024 + (3%2)) );          // output: "It´s 2025"
 ```
-
-
-<br>
-
-
-### **Floating-points :**
-
-Floating-point numbers cannot yet be assigned directly as values.<br>
-However, this can be easily circumvented.
-<br>
-
-
-For example, we want to represent the number 1.23.
-```
-let x= 123/100;
-print(x);          // output: "1.23"
-```
-Support for floating point numbers will follow.
 
 
 <br>
@@ -226,7 +209,6 @@ print("The sum of 1 and 2 is: " + sum);
 ## Planned Features
 
 
-- Support for floating-points
 - Support for objects
 - Nativ Functions
 - User defined Comments

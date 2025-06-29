@@ -20,6 +20,10 @@ class Parser{
             return tokens[0];
         }
 
+        Token peekToken(int i = 1){
+            return tokens[i];
+        }
+
         Token thisEat(){
             Token prevToken = tokens[0];
             tokens.erase(tokens.begin());
@@ -68,7 +72,19 @@ class Parser{
         shared_ptr<Expression> parsePrimitives(){
             switch (thisToken().art){
                 case TokenArt::Number:
-                    return make_shared<NumberNode>(stod(thisEat().value)); 
+                    if(peekToken(1).art == TokenArt::Dot){
+                        if (peekToken(2).art == TokenArt::Number) {
+                            string doubelNumber = thisEat().value;
+                            doubelNumber += thisEat().value;
+                            doubelNumber += thisEat().value;
+                            return make_shared<NumberNode>(stod(doubelNumber));
+                        }else{
+                            cerr<<"\n[[Stage]]: Parsing     [[ERROR]] : Expected Number after '.', got "<<thisToken().value;
+                            exit(1);
+                        }
+                    }else{
+                        return make_shared<NumberNode>(stod(thisEat().value)); 
+                    }
                 case TokenArt::Identifier:
                     return make_shared<IdentifierNode>(thisEat().value);
                 case TokenArt::OpenParen:{

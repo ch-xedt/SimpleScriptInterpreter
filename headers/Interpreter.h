@@ -330,19 +330,19 @@ class Interpreter{
 
         shared_ptr<R_Value> evaluateInputNode(shared_ptr<InputNode> inputNode, shared_ptr<Environment> environment){
             if(inputNode->inputType == "n"){
-                int input;
-                cin>>input;
-                shared_ptr<R_Value> inputValue = makeNumberValue(input);
+                string input;
+                getline(cin,input);
+                shared_ptr<R_Value> inputValue = makeNumberValue(stod(input));
                 environment->assignVariable(inputNode->variableName, inputValue );
             }else if(inputNode->inputType == "s"){
                 string input;
-                cin.ignore();
                 getline(cin,input);
                 shared_ptr<R_Value> inputValue = makeStringValue(input);
                 environment->assignVariable(inputNode->variableName, inputValue );
             }else if(inputNode->inputType == "b"){
                 string input;
                 cin>>input;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 if(input == "true"){
                     shared_ptr<R_Value> inputValue = makeBoolValue(true);
                     environment->assignVariable(inputNode->variableName, inputValue );
