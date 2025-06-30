@@ -25,6 +25,7 @@ enum class NodeType{
     FunctionDeclarationNode,
     CallNode,
     ReturnNode,
+    WhileNode,
 };
 
 struct Statement{
@@ -237,6 +238,22 @@ struct ReturnNode : public Expression{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"ReturnNode( ";
         returnValueExpression->print(depth+1);
+        cout<<"\n"<<indent<<")";
+    }
+};
+
+struct WhileNode : public Statement{
+    shared_ptr<Expression> condition;
+    vector<shared_ptr<Statement>> whileBody;
+    WhileNode(shared_ptr<Expression> condition, vector<shared_ptr<Statement>> whileBody) : Statement(NodeType::WhileNode), condition(condition), whileBody(whileBody){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"WhileNode( ";
+        condition->print(depth+1);
+        cout<<"\n"<<indent<<indent<<"WhileBody:";
+        for(auto &statement : whileBody){
+            statement->print(depth+3);
+        }
         cout<<"\n"<<indent<<")";
     }
 };

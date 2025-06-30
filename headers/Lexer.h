@@ -19,6 +19,7 @@ enum class TokenArt {
     Function,
     Call,
     Return,
+    While,
     Number,
     Identifier,
     Equal,//=
@@ -48,6 +49,7 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"function", TokenArt::Function},
     {"call", TokenArt::Call},
     {"return", TokenArt::Return},
+    {"while", TokenArt::While},
 };
 
 struct Token {
@@ -80,6 +82,7 @@ class Lexer{
                 case TokenArt::Function: return "FunctionToken";
                 case TokenArt::Call: return "CallToken";
                 case TokenArt::Return: return "ReturnToken";
+                case TokenArt::While: return "WhileToken";
                 case TokenArt::Number: return "NumberToken";
                 case TokenArt::Identifier: return "IdentifierToken";
                 case TokenArt::BinaryOperator: return "BinaryOperatorToken";

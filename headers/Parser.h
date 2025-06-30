@@ -60,6 +60,8 @@ class Parser{
                     return parseFunctionCall();
                 case TokenArt::Return:
                     return parseReturn();
+                case TokenArt::While:
+                    return parseWhile();
                 default:
                     return parseExpressions();
             }
@@ -277,6 +279,20 @@ class Parser{
             shared_ptr<Expression> returnValue = parseExpressions();
             expect(TokenArt::Semicolon, ";");
             return make_shared<ReturnNode>(returnValue);
+        }
+
+        shared_ptr<Statement> parseWhile(){
+            thisEat();
+            expect(TokenArt::OpenParen, "(");
+            shared_ptr<Expression> condition = parseConditional();
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::OpenBrace, "{");
+            vector<shared_ptr<Statement>> whileBody;
+            while(notTheEnd() && thisToken().art!= TokenArt::CloseBrace){
+                whileBody.push_back(parseStatements());
+            }
+            expect(TokenArt::CloseBrace, "}");
+            return make_shared<WhileNode>(condition, whileBody);
         }
 
     public:

@@ -91,6 +91,11 @@ class Interpreter{
                         shared_ptr<ReturnNode> returnNode = dynamic_pointer_cast<ReturnNode>(astNode);
                         return evaluateReturnNode(returnNode,environment);
                     }
+                case NodeType::WhileNode:
+                    {
+                        shared_ptr<WhileNode> whileNode = dynamic_pointer_cast<WhileNode>(astNode);
+                        return evaluateWhileNode(whileNode,environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -401,6 +406,19 @@ class Interpreter{
             }
         }
 
+        shared_ptr<R_Value> evaluateWhileNode(shared_ptr<WhileNode> whileNode, shared_ptr<Environment> environment){
+            shared_ptr<Environment> env = make_shared<Environment>(environment);
+            env->initEnvironment();
+            shared_ptr<ConditionalNode> conditionNode = dynamic_pointer_cast<ConditionalNode>(whileNode->condition);
+            shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
+            while(dynamic_pointer_cast<BoolValue>(condition)->value == true){
+                for (auto& statement : whileNode->whileBody){
+                    evaluate(statement,env);
+                }
+                condition = evaluateConditionalNode(conditionNode, env);
+            }
+            return makeNullValue();
+        }
 };
 
 

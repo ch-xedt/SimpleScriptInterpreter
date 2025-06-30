@@ -154,6 +154,7 @@ if( x > y ){
 
 ### **FOR-Loops :**
 FOR-Loops allow you to execute a code block multiple times.<br>
+They consist of three parts: initialization, condition, and update, which are all defined in the loop header.<br>
 The loop will be executed as long as the given condition stays true.
 
 ```
@@ -166,6 +167,26 @@ Whether the condition is true is checked each time the code block is executed.
 
 <br>
 
+
+### **WHILE-Loops :**
+WHILE-Loops allow you to repeatedly execute a block of code as long as a specified condition is true.<br>
+The condition is checked before each iteration, if it evaluates to false, the loop ends immediately.
+
+```
+let run = true;
+let i = 0;
+
+while(run){
+  print("" + i);
+  i = i + 1;
+  if(i = 10){
+    run = false;
+  }
+}
+```
+
+
+<br>
 
 ### **User-INPUT :**
 
