@@ -8,4 +8,4 @@ let y = "You are : ";
 const z = " years old.";
 const isHuman = true;
 
-print( y + x + z + "    Are you human: " + isTrue); 
+print( y + x + z + "    Are you human: " + isHuman); 

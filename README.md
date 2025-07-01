@@ -37,18 +37,18 @@ const pi = 3.1415;
 The type of the variable is determined automatically and can therefore change during runtime, unless it`s a constant variable.
 
 ```
-let x = "Hello World";        // String-type
-x = 0;                        // Integer-type
+let x = "Hello World";        # String-type #
+x = 0;                        # Integer-type #
 ```
 
 Variables can take integer values, float values ,string values, boolean values ​​or null values.
 
 ```
-let x = 0;                    // Integer value
-let y = 0.0;                  // Float value
-let z = "Hello World!";       // String value
-let q = true;                 // Boolean value
-let w = null;                 // Null value
+let x = 0;                    # Integer value #
+let y = 0.0;                  # Float value #
+let z = "Hello World!";       # String value #
+let q = true;                 # Boolean value #
+let w = null;                 # Null value #
 ```
 
 <br>
@@ -61,8 +61,8 @@ The arithmetic follows the usual arithmetic rules. Pemdas. <br>
 Expressions in parentheses are treated first.
 
 ```
-let x = 5*(2+1);            // 15
-let y = x % 2;              // 1
+let x = 5*(2+1);            # 15 #
+let y = x % 2;              # 1 #
 ```
 
 <br>
@@ -74,16 +74,16 @@ let y = x % 2;              // 1
 String concatenation is supported using the + operator.
 
 ```
-let x =  "Hello " + "World!"             // "Hello World!"
+let x =  "Hello " + "World!"         # "Hello World!" #
 ```
 Meaningful binary operations between different types are also possible.
 ```
 const x = "There are ";
 let y = 3;
-let z = x + y + " apples"             // "There are 3 apples"
+let z = x + y + " apples"             # "There are 3 apples" #
 
 let isItTrue = true;
-z = "That is " + isItTrue;            // "That is true"
+z = "That is " + isItTrue;            # "That is true" #
 ```
 <br>
 
@@ -92,23 +92,23 @@ z = "That is " + isItTrue;            // "That is true"
 Print something to the terminal window using the `print` - function.
 
 ```
-print("Hello World!");                   // output: "Hello World!"
+print("Hello World!");                   # output: "Hello World!" #
 ```
 
 Variables can also be printed without any problems.
 
 ```
 const x = "Hello World!";
-print(x);                                // output: "Hello World!"
+print(x);                                # output: "Hello World!" #
 ```
 Or print both.
 ```
 const x = 2025;
-print("It`s" + x);                        // output: "It´s 2025"
+print("It`s" + x);                        # output: "It´s 2025" #
 ```
 You can also print expressions.
 ```
-print("It`s" + (2024 + (3%2)) );          // output: "It´s 2025"
+print("It`s" + (2024 + (3%2)) );          # output: "It´s 2025" #
 ```
 
 
@@ -227,12 +227,25 @@ print("The sum of 1 and 2 is: " + sum);
 <br>
 
 
+### **COMMENTS :**
+Comments are used to add explanatory text to your code. <br>
+Comments are ignored by the interpreter and do not affect the execution of the code. <br>
+Comments are writen between `##`.
+
+```
+let i = 0; #This is a comment#
+
+i = i #This is also a comment#  + 1;
+```
+
+<br>
+
+
 ## Planned Features
 
 
 - Support for objects
 - Nativ Functions
-- User defined Comments
 
 
 <br>
@@ -268,7 +281,7 @@ function exampleFunction(){
   }
 
 
-  print("You got : ");
+  print("You got : "); #Print count of strawberries#
 
   for (let i = 0; i < 10; i = i+1;){
       if(i = 1){

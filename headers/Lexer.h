@@ -158,6 +158,14 @@ class Lexer{
                 }else if (source[0] == '<') {
                     tokens.push_back({ "<", TokenArt::Lesser });
                     source.erase(0, 1); 
+                }else if(source[0] == '#'){
+                    source.erase(0, 1);
+                    while (!source.empty() && source[0] != '#') {
+                        source.erase(0, 1);
+                    }
+                    if (!source.empty() && source[0] == '#') {
+                        source.erase(0, 1);
+                    }
                 }else if (isAlpha(source[0])) {
                     string identifier = "";
                     while (!source.empty() && isAlpha(source[0])) {
