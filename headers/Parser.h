@@ -116,7 +116,7 @@ class Parser{
 
         shared_ptr<Expression> parseMultiplicativeBinary(){
             shared_ptr<Expression> left = parsePrimitives();
-            while(notTheEnd() && (thisToken().value=="*" || thisToken().value=="/" || thisToken().value=="%")){
+            while(notTheEnd() && (thisToken().value=="*" || thisToken().value=="/" || thisToken().value=="%" || thisToken().value=="^")){
                 string operatorValue = thisEat().value;
                 shared_ptr<Expression> right = parsePrimitives();
                 left=make_shared<BinaryNode>(left,right,operatorValue);

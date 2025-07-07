@@ -145,7 +145,7 @@ class Lexer{
                         cerr<<"\n[[Stage]] : Lexing  [[ERROR]] : Unclosed String Literal.\n";
                         exit(1);
                     }
-                }else if (source[0] == '+' || source[0] == '-' || source[0] == '*' || source[0] == '/' || source[0] == '%') {
+                }else if (source[0] == '+' || source[0] == '-' || source[0] == '*' || source[0] == '/' || source[0] == '%' || source[0] == '^') {
                     tokens.push_back({ string(1, source[0]), TokenArt::BinaryOperator });
                     source.erase(0, 1); 
                 }else if (source[0] == '=') {

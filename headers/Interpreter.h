@@ -162,6 +162,8 @@ class Interpreter{
                 result->value = left->value / right->value; 
             }else if (binaryNode->op == "%"){
                 result->value = (int)left->value % (int)right->value;
+            }else if (binaryNode->op == "^"){
+                result->value = pow(left->value,right->value);
             }else{
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid binary operator " <<binaryNode->op<<" \n";
                 exit(1);
