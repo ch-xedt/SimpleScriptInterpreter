@@ -13,6 +13,6 @@ let myBool = "";
 in(myBool, b);
 print("Your Input is : " + myBool);
 
-if(myBool = true){
+if(myBool == true){
     print("strawberry");
 }

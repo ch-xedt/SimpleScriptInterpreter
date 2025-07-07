@@ -4,13 +4,13 @@ let w = x + 1;
 if( w < x ){
   print(w + " is smaller than " + x);
 }else{
-  if(w = x){
+  if(w == x){
     print("w as big as x");
   }else{
-    let f = 2;
-    if(w>x){
+    let f = x;
+    if(w > x){
       let s = 12;
-      print("w bigger than x"+f);
+      print("w (" + w + ") bigger than x (" + f + ")");
     }
   }
 }

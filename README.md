@@ -131,7 +131,7 @@ if( x < y ){
   print("x is smaller than y");
 }
 
-if( x = y ){
+if( x == y ){
   print("x is as big as y");
 }
 ```
@@ -158,7 +158,7 @@ They consist of three parts: initialization, condition, and update, which are al
 The loop will be executed as long as the given condition stays true.
 
 ```
-for(let i = 0; i < 10; i = i + 1;){
+for(let i = 1; i <= 10; i = i + 1;){
   print(i + "");
 }
 ```
@@ -176,10 +176,10 @@ The condition is checked before each iteration, if it evaluates to false, the lo
 let run = true;
 let i = 0;
 
-while(run){
+while(run == true){
   print("" + i);
   i = i + 1;
-  if(i = 10){
+  if(i == 10){
     run = false;
   }
 }
@@ -265,7 +265,7 @@ function exampleFunction(){
   print("Are you a human? (true/false): ");
   in(isHuman, b);
 
-  if(isHuman = true){
+  if(isHuman == true){
     print("Hello Human!);
   }else{
     print("You are not a human!");

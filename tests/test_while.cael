@@ -1,6 +1,6 @@
 let run = true;
 let i = 0;
-while(run = true){
+while(run == true){
     print(""+i);
     i = i + 1 ;
     if(i = 5){

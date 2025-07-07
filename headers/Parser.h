@@ -175,7 +175,7 @@ class Parser{
 
         shared_ptr<Expression> parseConditional(){
             shared_ptr<Expression> left = parseMultiplicativeBinary();
-            if(notTheEnd() && thisToken().value == "<" || thisToken().value == ">" || thisToken().value == "="){
+            if(notTheEnd() && thisToken().value == "<" || thisToken().value == ">" || thisToken().value == "==" || thisToken().value == "<=" || thisToken().value == ">="){
                 string conditionOperator = thisEat().value;
                 shared_ptr<Expression> right = parseMultiplicativeBinary();
                 return make_shared<ConditionalNode>(left, right, conditionOperator);

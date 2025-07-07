@@ -35,6 +35,9 @@ enum class TokenArt {
     Dot,//.
     Greater,//>
     Lesser,//<
+    Same,//==
+    GreaterEqual,//>=
+    LesserEqual,//<=
     EndOfFile
 };
 
@@ -96,6 +99,11 @@ class Lexer{
                 case TokenArt::Semicolon: return "SemicolonToken";
                 case TokenArt::Comma: return "CommaToken";
                 case TokenArt::Dot: return "DotToken";
+                case TokenArt::Greater: return "GreaterToken";
+                case TokenArt::Lesser: return "LesserToken";
+                case TokenArt::Same: return "SameToken";
+                case TokenArt::GreaterEqual: return "GreaterEqualToken";
+                case TokenArt::LesserEqual: return "LesserEqualToken";
                 case TokenArt::EndOfFile: return "EndOfFileToken";
                 default: return "UnknownToken";
             } 
@@ -141,8 +149,14 @@ class Lexer{
                     tokens.push_back({ string(1, source[0]), TokenArt::BinaryOperator });
                     source.erase(0, 1); 
                 }else if (source[0] == '=') {
-                    tokens.push_back({ "=", TokenArt::Equal });
-                    source.erase(0, 1);
+                    if(!source.empty() && source[1] == '=') {
+                        tokens.push_back({ "==", TokenArt::Same });
+                        source.erase(0, 2);
+                        continue;
+                    }else{
+                        tokens.push_back({ "=", TokenArt::Equal });
+                        source.erase(0, 1);
+                    }
                 }else if (source[0] == ';') {
                     tokens.push_back({ ";", TokenArt::Semicolon });
                     source.erase(0, 1); 
@@ -153,11 +167,23 @@ class Lexer{
                     tokens.push_back({ ".", TokenArt::Dot });
                     source.erase(0, 1); 
                 }else if (source[0] == '>') {
-                    tokens.push_back({ ">", TokenArt::Greater });
-                    source.erase(0, 1); 
+                    if (!source.empty() && source[1] == '=') {
+                        tokens.push_back({ ">=", TokenArt::GreaterEqual });
+                        source.erase(0, 2);
+                        continue;
+                    }else{
+                        tokens.push_back({ ">", TokenArt::Greater });
+                        source.erase(0, 1);
+                    }
                 }else if (source[0] == '<') {
-                    tokens.push_back({ "<", TokenArt::Lesser });
-                    source.erase(0, 1); 
+                    if (!source.empty() && source[1] == '=') {
+                        tokens.push_back({ "<=", TokenArt::LesserEqual });
+                        source.erase(0, 2);
+                        continue;
+                    }else{
+                        tokens.push_back({ "<", TokenArt::Lesser });
+                        source.erase(0, 1); 
+                    }
                 }else if(source[0] == '#'){
                     source.erase(0, 1);
                     while (!source.empty() && source[0] != '#') {

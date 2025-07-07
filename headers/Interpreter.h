@@ -291,18 +291,22 @@ class Interpreter{
                     result->value = dynamic_pointer_cast<NumberValue>(left)->value > dynamic_pointer_cast<NumberValue>(right)->value;
                 }else if (conditionalNode->conditionOperator == "<") {
                     result->value = dynamic_pointer_cast<NumberValue>(left)->value < dynamic_pointer_cast<NumberValue>(right)->value;
-                }else if (conditionalNode->conditionOperator == "=") {
+                }else if (conditionalNode->conditionOperator == "==") {
                     result->value = dynamic_pointer_cast<NumberValue>(left)->value == dynamic_pointer_cast<NumberValue>(right)->value;
+                }else if(conditionalNode->conditionOperator == ">=") {
+                    result->value = dynamic_pointer_cast<NumberValue>(left)->value >= dynamic_pointer_cast<NumberValue>(right)->value;
+                }else if (conditionalNode->conditionOperator == "<=") {
+                    result->value = dynamic_pointer_cast<NumberValue>(left)->value <= dynamic_pointer_cast<NumberValue>(right)->value;
                 }
             }else if (left->type == ValueType::StringValue && right->type == ValueType::StringValue) {
-                if(conditionalNode->conditionOperator == "="){
+                if(conditionalNode->conditionOperator == "=="){
                     result->value = dynamic_pointer_cast<StringValue>(left)->value == dynamic_pointer_cast<StringValue>(right)->value;
                 }else{
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid conditional operator ("<<conditionalNode->conditionOperator<<") for String-Values\n";
                     exit(1);
                 }
             }else if (left->type == ValueType::BoolValue && right->type == ValueType::BoolValue){
-                if (conditionalNode->conditionOperator == "=") {
+                if (conditionalNode->conditionOperator == "==") {
                     result->value = dynamic_pointer_cast<BoolValue>(left)->value == dynamic_pointer_cast<BoolValue>(right)->value;
                 }else{
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid conditional operator ("<<conditionalNode->conditionOperator<<") for Boolean-Values\n";
