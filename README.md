@@ -41,7 +41,7 @@ let x = "Hello World";        # String-type #
 x = 0;                        # Integer-type #
 ```
 
-Variables can take integer values, float values ,string values, boolean values ​​or null values.
+Variables can take integer values, float values, string values, boolean values ​​or null values.
 
 ```
 let x = 0;                    # Integer value #
@@ -61,8 +61,9 @@ The arithmetic follows the usual arithmetic rules. Pemdas. <br>
 Expressions in parentheses are treated first.
 
 ```
-let x = 5*(2+1);            # 15 #
-let y = x % 2;              # 1 #
+let x = 5*(2-(-1));            # 15 #
+let y = x % 2;                 # 1 #
+let x = 2^(2+(5%2));           # 8 #
 ```
 
 <br>

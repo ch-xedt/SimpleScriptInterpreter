@@ -72,6 +72,16 @@ class Parser{
         }
 
         shared_ptr<Expression> parsePrimitives(){
+            if (thisToken().art == TokenArt::BinaryOperator && thisToken().value == "-") {
+                thisEat();
+                if (thisToken().art == TokenArt::Number) {
+                    double value = -stod(thisEat().value);
+                    return make_shared<NumberNode>(value);
+                } else {
+                    cerr<<"\n[[Stage]]: Parsing     [[ERROR]] : Expected Number after '-', got "<<thisToken().value;
+                    exit(1);
+                }
+            }
             switch (thisToken().art){
                 case TokenArt::Number:
                     if(peekToken(1).art == TokenArt::Dot){
