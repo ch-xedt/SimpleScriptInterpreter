@@ -252,6 +252,28 @@ i = i #This is also a comment#  + 1;
 <br>
 
 
+## Usage
+
+#### **Windows :**
+
+1. Download the caelum.exe executable from the src folder
+2. cd to the folder containing the caelum.exe executable
+3. Run the interpreter with the following command: 
+`./caelum.exe filepath/to/script`
+<br>
+
+#### **Linux & Mac :**
+
+1. Clone or download the repository to your local machine
+2. Compile the interpreter in the src folder with the following command (g++ is required) : 
+` g++ main.cpp -static -o caelum   `
+3. cd to the folder containing the caelum.exe executable
+4. Run the interpreter with the following command: 
+`./caelum filepath/to/script`
+
+<br>
+
+
 ## Example Code
 
 ```
