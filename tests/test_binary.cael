@@ -9,3 +9,6 @@ const z = " years old.";
 const isHuman = true;
 
 print( y + x + z + "    Are you human: " + isHuman); 
+
+let thisString = 3 * " hey";
+print(thisString);

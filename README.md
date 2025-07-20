@@ -86,6 +86,14 @@ let z = x + y + " apples"             # "There are 3 apples" #
 let isItTrue = true;
 z = "That is " + isItTrue;            # "That is true" #
 ```
+Multiplication operation between strings and numbers allows you concatenating a string multiple times.
+
+```
+let x = "Hello" * 3;               # "HelloHelloHello" #
+let y = "Hey" * 5.5;               # "HeyHeyHeyHeyHey" #
+```
+
+
 <br>
 
 
@@ -304,7 +312,7 @@ function exampleFunction(){
   }
 
 
-  print("You got : "); #Print count of strawberries#
+  print("You got : "); #Print strawberries#
 
   for (let i = 0; i < 10; i = i+1;){
       if(i = 1){

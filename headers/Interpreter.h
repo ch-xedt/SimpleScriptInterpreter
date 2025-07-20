@@ -194,9 +194,18 @@ class Interpreter{
                 }else{
                     result->value = to_string(left->value) + right->value;   
                 }
+            }else if (binaryNode->op == "*"){
+                string temp = "";
+                int limit = (int)left->value;
+                for(int i = 0; i<limit; i++){
+                    temp += right->value;
+                }
+                result->value = temp;
+            }else{
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid String binary operator " <<binaryNode->op<<" \n";
+                exit(1);
             }
-
-
+            
             return result;
         }
         
@@ -209,6 +218,16 @@ class Interpreter{
                 }else{
                     result->value = left->value + to_string(right->value) ;   
                 }
+            }else if(binaryNode->op == "*"){
+                string temp = "";
+                int limit = (int)right->value;
+                for(int i = 0; i<limit; i++){
+                    temp += left->value;
+                }
+                result->value = temp;
+            }else{
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid String binary operator " <<binaryNode->op<<" \n";
+                exit(1);
             }
 
             return result;
