@@ -62,6 +62,8 @@ class Parser{
                     return parseReturn();
                 case TokenArt::While:
                     return parseWhile();
+                case TokenArt::Array:
+                    return parseArray();
                 default:
                     return parseExpressions();
             }
@@ -98,6 +100,9 @@ class Parser{
                         return make_shared<NumberNode>(stod(thisEat().value)); 
                     }
                 case TokenArt::Identifier:
+                    if(peekToken(1).art == TokenArt::OpenBracket) {
+                        return parseArrayCall();
+                    }
                     return make_shared<IdentifierNode>(thisEat().value);
                 case TokenArt::OpenParen:{
                     thisEat();
@@ -303,6 +308,47 @@ class Parser{
             }
             expect(TokenArt::CloseBrace, "}");
             return make_shared<WhileNode>(condition, whileBody);
+        }
+
+        shared_ptr<Expression> parseArray(){
+            thisEat();
+            expect(TokenArt::Lesser, "<");
+            shared_ptr<Expression> arraySize = nullptr;
+            if(thisToken().art != TokenArt::Greater){
+                arraySize = parseExpressions();
+            }
+            expect(TokenArt::Greater, ">");
+            string variableName = expect(TokenArt::Identifier, "Identifier").value;
+            expect(TokenArt::Equal, "=");
+            expect(TokenArt::OpenBracket, "[");
+            vector<shared_ptr<Expression>> body;
+            while (notTheEnd() && thisToken().art != TokenArt::CloseBracket){
+                body.push_back(parseExpressions());
+                if(notTheEnd() && thisToken().art != TokenArt::CloseBracket){
+                    expect(TokenArt::Comma, ",");
+                }
+            }
+            expect(TokenArt::CloseBracket, "]");
+            expect(TokenArt::Semicolon, ";");
+            if(arraySize == nullptr){
+                return make_shared<ArrayNode>(variableName, body);
+            }
+            return make_shared<ArrayNode>(variableName, body, arraySize);
+        }
+
+        shared_ptr<Expression> parseArrayCall(){
+            string arrayName = thisEat().value;
+            shared_ptr<Expression> arrayIndex = nullptr;
+            expect(TokenArt::OpenBracket, "[");
+            if(thisToken().art!= TokenArt::CloseBracket){
+                arrayIndex = parseExpressions();
+            }
+            expect(TokenArt::CloseBracket, "]");
+            if(arrayIndex == nullptr){
+                cerr<<"\n[[Stage]]: Parsing     [[ERROR]] : Expected Array Index got "<<thisToken().value;
+                exit(1);
+            }
+            return make_shared<ArrayCallNode>(arrayName, arrayIndex);
         }
 
     public:

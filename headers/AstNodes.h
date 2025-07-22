@@ -6,6 +6,7 @@
 #include "string"
 #include "memory"
 #include <memory>
+#include <vector>
 
 using namespace std;
 
@@ -26,6 +27,8 @@ enum class NodeType{
     CallNode,
     ReturnNode,
     WhileNode,
+    ArrayNode,
+    ArrayCallNode,
 };
 
 struct Statement{
@@ -254,6 +257,50 @@ struct WhileNode : public Statement{
         for(auto &statement : whileBody){
             statement->print(depth+3);
         }
+        cout<<"\n"<<indent<<")";
+    }
+};
+
+struct ArrayNode : public Expression{
+    string arrayName = "";
+    vector<shared_ptr<Expression>> arrayBody;
+    shared_ptr<Expression> size;
+    ArrayNode(string arrayName, vector<shared_ptr<Expression>> arrayBody) : Expression(NodeType::ArrayNode), arrayName(arrayName) ,arrayBody(arrayBody){
+        size = make_shared<NumberNode>(arrayBody.size());
+    }
+    ArrayNode(string arrayName, vector<shared_ptr<Expression>> arrayBody, shared_ptr<Expression> size) : Expression(NodeType::ArrayNode), arrayName(arrayName) ,arrayBody(arrayBody), size(size){}
+    void print(int depth) const override{
+        string indent(3*depth, ' ');
+        cout<<"\n"<<indent<<"ArrayLiteral( ("<< arrayName<<")";
+        if(size->node == NodeType::NumberNode){
+            cout<<"\n"<<indent<<indent<<"Size:"<<dynamic_pointer_cast<NumberNode>(size)->value;
+        }else if(size->node == NodeType::IdentifierNode){
+            cout<<"\n"<<indent<<indent<<"Size:"<<dynamic_pointer_cast<IdentifierNode>(size)->value;
+        }else if(size->node == NodeType::BinaryNode){
+            cout<<"\n"<<indent<<indent<<"Size:";
+            dynamic_pointer_cast<BinaryNode>(size)->print(depth+3);
+        }else{
+            cout<<"\n"<<indent<<"ArrayLiteral( ("<< arrayName<<")";
+            cout<<"\n"<<indent<<indent<<"Size: Unknown";
+        }
+        cout<<"\n"<<indent<<indent<<"ArrayBody:";
+        for(auto &index : arrayBody){
+            index->print(depth+3);
+        }
+        cout<<"\n"<<indent<<")";
+    }
+};
+
+struct ArrayCallNode: public Expression{
+    string arrayName = "";
+    shared_ptr<Expression> index;
+    ArrayCallNode(string arrayName, shared_ptr<Expression>  index) : Expression(NodeType::ArrayCallNode), arrayName(arrayName), index(index){}
+    void print(int depth) const override{
+        string indent(3*depth, ' ');
+        cout<<"\n"<<indent<<"ArrayCall( ("<< arrayName<< ")";
+        cout<<"\n   "<<indent<<"Index(";
+        index->print(depth+2);
+        cout<<"\n   "<<indent<<")";
         cout<<"\n"<<indent<<")";
     }
 };

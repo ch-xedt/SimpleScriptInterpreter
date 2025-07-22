@@ -96,6 +96,16 @@ class Interpreter{
                         shared_ptr<WhileNode> whileNode = dynamic_pointer_cast<WhileNode>(astNode);
                         return evaluateWhileNode(whileNode,environment);
                     }
+                case NodeType::ArrayNode:
+                    {
+                        shared_ptr<ArrayNode> arrayNode = dynamic_pointer_cast<ArrayNode>(astNode);
+                        return evaluateArrayNode(arrayNode,environment);
+                    }
+                case NodeType::ArrayCallNode:
+                    {
+                        shared_ptr<ArrayCallNode> arrayCallNode = dynamic_pointer_cast<ArrayCallNode>(astNode);
+                        return evaluateArrayCallNode(arrayCallNode, environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -263,13 +273,33 @@ class Interpreter{
             return environment->declareVariable(variableDeclarationNode->name,result,variableDeclarationNode->IsConstant);
         }
 
-        shared_ptr<R_Value> evaluateVariableAssignmentNode(shared_ptr<VariableAssignmentNode> variableAssignmentNode, shared_ptr<Environment> environment){
-            if(variableAssignmentNode->assignmentVariable->node != NodeType::IdentifierNode){
-                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid assignment variable type \n";
+       shared_ptr<R_Value> evaluateVariableAssignmentNode(shared_ptr<VariableAssignmentNode> variableAssignmentNode, shared_ptr<Environment> environment){
+            if(variableAssignmentNode->assignmentVariable->node != NodeType::IdentifierNode && variableAssignmentNode->assignmentVariable->node != NodeType::ArrayCallNode){
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid assignment value type \n";
                 exit(1);
             }
-            const string variableName = dynamic_pointer_cast<IdentifierNode>(variableAssignmentNode->assignmentVariable)->value;
-            return environment->assignVariable(variableName,evaluate(variableAssignmentNode->value,environment));
+            if(variableAssignmentNode->assignmentVariable->node == NodeType::ArrayCallNode){
+                shared_ptr<ArrayCallNode> arrayCallNode = dynamic_pointer_cast<ArrayCallNode>(variableAssignmentNode->assignmentVariable);
+                shared_ptr<ArrayValue> arrayValue = dynamic_pointer_cast<ArrayValue>(environment->lookupVariable(arrayCallNode->arrayName));
+                shared_ptr<NumberValue> indexValue = dynamic_pointer_cast<NumberValue>(evaluate(arrayCallNode->index, environment));
+                if(indexValue->value < 0 || indexValue->value >= arrayValue->body.size()){
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid array index assigning to array("<<arrayCallNode->arrayName<<"), Index out of bounds\n";
+                    exit(1);
+                }
+                shared_ptr<R_Value> assignValue = evaluate(variableAssignmentNode->value,environment);
+                if(assignValue->type == arrayValue->body[indexValue->value]->type){
+                    arrayValue->body[indexValue->value] = assignValue;
+                    return arrayValue->body[indexValue->value];
+                }else {
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid value type assigning to array("<<arrayCallNode->arrayName<<")\n";
+                    exit(1);
+                }
+            }else if(variableAssignmentNode->assignmentVariable->node == NodeType::IdentifierNode){
+                const string variableName = dynamic_pointer_cast<IdentifierNode>(variableAssignmentNode->assignmentVariable)->value;
+                return environment->assignVariable(variableName,evaluate(variableAssignmentNode->value,environment));
+            }else{
+                return makeNullValue();
+            }
         }
 
         shared_ptr<R_Value> evaluatePrintNode(shared_ptr<PrintNode> printNode,shared_ptr<Environment> environment){
@@ -373,10 +403,10 @@ class Interpreter{
                 string input;
                 cin>>input;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                if(input == "true"){
+                if(input == "true" || input == "True" || input == "1" || input == "y" || input == "Y"){
                     shared_ptr<R_Value> inputValue = makeBoolValue(true);
                     environment->assignVariable(inputNode->variableName, inputValue );
-                }else if(input == "false") {
+                }else if(input == "false" || input == "False" || input == "0" || input == "n" || input == "N") {
                     shared_ptr<R_Value> inputValue = makeBoolValue(false);
                     environment->assignVariable(inputNode->variableName, inputValue );
                 }else {
@@ -444,8 +474,87 @@ class Interpreter{
             }
             return makeNullValue();
         }
+
+        shared_ptr<R_Value> evaluateArrayNode(shared_ptr<ArrayNode> arrayNode, shared_ptr<Environment> environment){
+            vector<shared_ptr<R_Value>> array;
+            shared_ptr<R_Value> sizeValue  = evaluate(arrayNode->size, environment);
+            int size = 0;
+
+            if(sizeValue->type == ValueType::NumberValue){
+                size = dynamic_pointer_cast<NumberValue>(sizeValue)->value;
+            }else{
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid array size, expected NumberValue\n";
+                exit(1);
+            }
+            if (arrayNode->arrayBody.empty()) {
+                cerr << "\n[[Stage]] : Interpreting  [[ERROR]] : Array cannot be empty, type cannot be inferred\n";
+                exit(1);
+            }
+            if(size != arrayNode->arrayBody.size()){
+                if(size < arrayNode->arrayBody.size()){
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid array size\n";
+                    exit(1);
+                }
+                int pushedSize = 0;
+                for(auto &expression : arrayNode->arrayBody){
+                    array.push_back(evaluate(expression, environment));
+                    pushedSize++;
+                }
+                switch (array[0]->type) {
+                    case ValueType::NumberValue:
+                        {
+                            for(int i = 0; i < size - pushedSize; i++){
+                                array.push_back(makeNumberValue(0));
+                            }
+                            break;
+                        }
+                    case ValueType::StringValue:
+                        {
+                            for(int i = 0; i < size - pushedSize; i++){
+                                array.push_back(makeStringValue(""));
+                            }
+                            break;
+                        }
+                    case ValueType::BoolValue:
+                        {
+                            for(int i = 0; i < size - pushedSize; i++){
+                                array.push_back(makeBoolValue (false));
+                            }
+                            break;
+                        }
+                    default:
+                        {
+                            cout<<"\n[[Stage]] : Interpreting  [[ERROR]] : Cannot fill array with given ValueType";
+                            exit(1);
+                        }
+                }
+            }else{
+                for(auto &expression : arrayNode->arrayBody){
+                    array.push_back(evaluate(expression, environment));
+                }
+            }
+            if (!array.empty()) {
+                for(auto &value : array){
+                    if(array[0]->type != value->type){
+                        cout << "\n[[Stage]] : Interpreting  [[ERROR]] : Invalid Array";
+                        exit(1);
+                    }
+                }
+            }
+            shared_ptr<ArrayValue> result = make_shared<ArrayValue>(array);
+            environment->declareVariable(arrayNode->arrayName, result);
+            return makeNullValue();
+        }
+
+        shared_ptr<R_Value> evaluateArrayCallNode(shared_ptr<ArrayCallNode> arrayCallNode, shared_ptr<Environment> environment){
+            shared_ptr<ArrayValue> arrayValue = dynamic_pointer_cast<ArrayValue>(environment->lookupVariable(arrayCallNode->arrayName));
+            shared_ptr<NumberValue> indexValue = dynamic_pointer_cast<NumberValue>(evaluate(arrayCallNode->index, environment));
+            if(indexValue->value >= arrayValue->body.size()){
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid array index Array("<<arrayCallNode->arrayName<<")["<<arrayCallNode->index<<"], Index out of bounds\n";
+                exit(1);
+            }
+            return arrayValue->body[indexValue->value];
+        }
 };
-
-
 
 #endif 

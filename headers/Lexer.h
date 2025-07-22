@@ -22,10 +22,13 @@ enum class TokenArt {
     While,
     Number,
     Identifier,
+    Array,
     Equal,//=
     BinaryOperator,//+,-,*,/,%,
     OpenParen, //(
     CloseParen,//)
+    OpenBracket, //[
+    CloseBracket,//]
     OpenBrace,//{
     CloseBrace,//}
     Quote,//"
@@ -53,6 +56,7 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"call", TokenArt::Call},
     {"return", TokenArt::Return},
     {"while", TokenArt::While},
+    {"array", TokenArt::Array},
 };
 
 struct Token {
@@ -88,10 +92,13 @@ class Lexer{
                 case TokenArt::While: return "WhileToken";
                 case TokenArt::Number: return "NumberToken";
                 case TokenArt::Identifier: return "IdentifierToken";
+                case TokenArt::Array: return "ArrayToken";
                 case TokenArt::BinaryOperator: return "BinaryOperatorToken";
                 case TokenArt::Equal: return "EqualToken"; 
                 case TokenArt::OpenParen: return "OpenParenToken";
                 case TokenArt::CloseParen: return "CloseParenToken";
+                case TokenArt::OpenBracket: return "OpenBracetToken";
+                case TokenArt::CloseBracket: return "CloseBracetToken";
                 case TokenArt::OpenBrace : return "OpenBraceToken";
                 case TokenArt::CloseBrace : return "CloseBraceToken";
                 case TokenArt::Quote: return "QuoteToken";
@@ -124,6 +131,12 @@ class Lexer{
                 }else if (source[0] == ')') {
                     tokens.push_back({ ")", TokenArt::CloseParen });
                     source.erase(0, 1);
+                }else if(source[0] == '['){
+                    tokens.push_back({"[", TokenArt::OpenBracket});
+                    source.erase(0,1);
+                }else if(source[0] == ']'){
+                    tokens.push_back({"]", TokenArt::CloseBracket});
+                    source.erase(0,1 );
                 }else if (source[0] == '{') {
                     tokens.push_back({ "{", TokenArt::OpenBrace  });
                     source.erase(0, 1);
@@ -231,6 +244,5 @@ class Lexer{
             cout<<"\n\n---------------------------------------------------------\n";
         }
 };
-
 
 #endif

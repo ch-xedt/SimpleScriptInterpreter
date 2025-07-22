@@ -1,0 +1,30 @@
+let x = 5;
+
+array <x+5> arr = [0,1,2,3];
+
+arr[x-1] = 4;
+
+function printArr(arr){
+    for(let i = 0; i< (x+5); i = i + 1;){
+        print("row #"+ (i+1) +"  index #" + i + "  Value(" + arr[i] + ")");
+    }
+}
+
+call printArr(arr);
+
+array <> secArr = ["h", "e", "y"];
+
+print("");
+print(secArr[0] + secArr[1] + secArr[2]);
+
+array <1> thirdArr = ["i"];
+secArr[0] = thirdArr[0];
+
+print(secArr[0] + secArr[1] + secArr[2]);
+print("");
+
+array <4> fourthArr = [true, false, true];
+
+for(let i = 0; i < 4; i = i+1;){
+    print(fourthArr[i]);
+}

@@ -20,6 +20,7 @@ enum class ValueType{
     StringValue,
     BoolValue,
     FunctionValue,
+    ArrayValue,
 };
 
 struct R_Value{
@@ -76,7 +77,18 @@ struct FunctionValue:R_Value{
     }
 };
 
-
+struct ArrayValue:R_Value{
+    vector<shared_ptr<R_Value>> body;
+    ArrayValue(vector<shared_ptr<R_Value>> body):R_Value(ValueType::ArrayValue), body(body){}
+    void print() const override{
+        cout<<"\n ArrayValue(";
+        for(auto &index : body){
+            index->print();
+            cout<<" , ";
+        }
+        cout<<" )";
+    }
+};
 
 
 inline shared_ptr<R_Value> makeNullValue(){
