@@ -1,0 +1,11 @@
+let x = 0;
+let y = true;
+
+do{
+    x=x+1;
+    if(x == 10){
+        y = false;
+    }
+}while(y == true);
+
+print(x);

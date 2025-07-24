@@ -41,6 +41,7 @@ enum class TokenArt {
     Same,//==
     GreaterEqual,//>=
     LesserEqual,//<=
+    Do,
     EndOfFile
 };
 
@@ -57,6 +58,7 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"return", TokenArt::Return},
     {"while", TokenArt::While},
     {"array", TokenArt::Array},
+    {"do", TokenArt::Do}
 };
 
 struct Token {
@@ -111,6 +113,7 @@ class Lexer{
                 case TokenArt::Same: return "SameToken";
                 case TokenArt::GreaterEqual: return "GreaterEqualToken";
                 case TokenArt::LesserEqual: return "LesserEqualToken";
+                case TokenArt::Do: return "DoToken";
                 case TokenArt::EndOfFile: return "EndOfFileToken";
                 default: return "UnknownToken";
             } 

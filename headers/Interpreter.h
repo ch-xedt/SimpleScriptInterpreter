@@ -106,6 +106,11 @@ class Interpreter{
                         shared_ptr<ArrayCallNode> arrayCallNode = dynamic_pointer_cast<ArrayCallNode>(astNode);
                         return evaluateArrayCallNode(arrayCallNode, environment);
                     }
+                case NodeType::DoWhileNode:
+                    {
+                        shared_ptr<DoWhileNode> doWhileNode = dynamic_pointer_cast<DoWhileNode>(astNode);
+                        return evaluateDoWhileNode(doWhileNode,environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -554,6 +559,23 @@ class Interpreter{
                 exit(1);
             }
             return arrayValue->body[indexValue->value];
+        }
+
+        shared_ptr<R_Value> evaluateDoWhileNode(shared_ptr<DoWhileNode> doWhileNode, shared_ptr<Environment> environment){
+            shared_ptr<Environment> env = make_shared<Environment>(environment);
+            env->initEnvironment();
+            for(auto& statement : doWhileNode->doBody){
+                evaluate(statement,env);
+            }
+            shared_ptr<ConditionalNode> conditionNode = dynamic_pointer_cast<ConditionalNode>(doWhileNode->condition);
+            shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
+            while(dynamic_pointer_cast<BoolValue>(condition)->value == true){
+                for (auto& statement : doWhileNode->doBody){
+                    evaluate(statement,env);
+                }
+                condition = evaluateConditionalNode(conditionNode, env);
+            }
+            return makeNullValue();
         }
 };
 

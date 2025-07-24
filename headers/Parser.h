@@ -64,6 +64,8 @@ class Parser{
                     return parseWhile();
                 case TokenArt::Array:
                     return parseArray();
+                case TokenArt::Do:
+                    return parseDoWhile();
                 default:
                     return parseExpressions();
             }
@@ -349,6 +351,22 @@ class Parser{
                 exit(1);
             }
             return make_shared<ArrayCallNode>(arrayName, arrayIndex);
+        }
+
+        shared_ptr<Statement> parseDoWhile(){
+            thisEat();
+            expect(TokenArt::OpenBrace, "{");
+            vector<shared_ptr<Statement>> doWhileBody;
+            while(notTheEnd() && thisToken().art!= TokenArt::CloseBrace){
+                doWhileBody.push_back(parseStatements());
+            }
+            expect(TokenArt::CloseBrace, "}");
+            expect(TokenArt::While, "while");
+            expect(TokenArt::OpenParen, "(");
+            shared_ptr<Expression> condition = parseConditional();
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<DoWhileNode>(doWhileBody, condition);
         }
 
     public:

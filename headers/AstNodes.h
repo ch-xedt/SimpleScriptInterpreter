@@ -29,6 +29,7 @@ enum class NodeType{
     WhileNode,
     ArrayNode,
     ArrayCallNode,
+    DoWhileNode,
 };
 
 struct Statement{
@@ -301,6 +302,23 @@ struct ArrayCallNode: public Expression{
         cout<<"\n   "<<indent<<"Index(";
         index->print(depth+2);
         cout<<"\n   "<<indent<<")";
+        cout<<"\n"<<indent<<")";
+    }
+};
+
+struct DoWhileNode : public Statement{
+    vector<shared_ptr<Statement>> doBody;
+    shared_ptr<Expression> condition;
+    DoWhileNode(vector<shared_ptr<Statement>> doBody, shared_ptr<Expression> condition) : Statement(NodeType::DoWhileNode), doBody(doBody), condition(condition){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"DoWhileNode( ";
+        cout<<"\n"<<indent<<indent<<"DoBody:";
+        for(auto &statement : doBody){
+            statement->print(depth+3);
+        }
+        cout<<"\n"<<indent<<indent<<"Condition:";
+        condition->print(depth+3);
         cout<<"\n"<<indent<<")";
     }
 };

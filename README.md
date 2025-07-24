@@ -62,7 +62,7 @@ Expressions in parentheses are treated first.
 
 ```js
 let x = 5*(2-(-1));            # 15 #
-let y = x % 2;                 # 1 #
+let y = 15 % 2;                # 1 #
 let x = 2^(2+(5%2));           # 8 #
 ```
 
@@ -197,6 +197,24 @@ while(run == true){
 
 <br>
 
+
+### **DO-WHILE-Loops :**
+DO-WHILE-Loops are similar to WHILE-loops, but the condition is checked after the code block is executed.<br>
+This guarantees that the loop body runs at least once, even if the condition is initially false.
+
+```js
+let i = 0;
+
+do{
+  print("" + i);
+  i = i + 1;
+}while(i < 10);
+```
+
+
+<br>
+
+
 ### **User-INPUT :**
 
 By using the `in` - function you can get user inputs.
@@ -304,8 +322,7 @@ numbers2[0] = numbers[0];
 
 1. Download the caelum.exe executable from the src folder
 2. cd to the folder containing the caelum.exe executable
-3. Run the interpreter with the following command:
-<br> 
+3. Run the interpreter with the following command: <br>
 
 `./caelum.exe filepath/to/script`
 <br>
@@ -313,13 +330,11 @@ numbers2[0] = numbers[0];
 #### **Linux & Mac :**
 
 1. Clone or download the repository to your local machine
-2. Compile the interpreter in the src folder with the following command (g++ is required) : 
-<br>
+2. Compile the interpreter in the src folder with the following command (g++ is required) : <br>
 
 ` g++ main.cpp -static -o caelum `
 1. cd to the folder containing the caelum executable
-2. Run the interpreter with the following command: 
-<br>
+2. Run the interpreter with the following command: <br>
 
 `./caelum filepath/to/script`
 
