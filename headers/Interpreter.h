@@ -13,6 +13,10 @@ using namespace std;
 
 class Interpreter{
     private:
+        struct ReturnException{
+            shared_ptr<R_Value> returnValue;
+            explicit ReturnException( shared_ptr<R_Value> returnValue) : returnValue(std::move(returnValue)){}
+        };
     public:
         shared_ptr<R_Value> evaluate(shared_ptr<Statement> astNode, shared_ptr<Environment> environment){
            switch(astNode->node){
@@ -278,7 +282,7 @@ class Interpreter{
             return environment->declareVariable(variableDeclarationNode->name,result,variableDeclarationNode->IsConstant);
         }
 
-       shared_ptr<R_Value> evaluateVariableAssignmentNode(shared_ptr<VariableAssignmentNode> variableAssignmentNode, shared_ptr<Environment> environment){
+        shared_ptr<R_Value> evaluateVariableAssignmentNode(shared_ptr<VariableAssignmentNode> variableAssignmentNode, shared_ptr<Environment> environment){
             if(variableAssignmentNode->assignmentVariable->node != NodeType::IdentifierNode && variableAssignmentNode->assignmentVariable->node != NodeType::ArrayCallNode){
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid assignment value type \n";
                 exit(1);
@@ -383,8 +387,10 @@ class Interpreter{
                 shared_ptr<ConditionalNode> conditionNode = dynamic_pointer_cast<ConditionalNode>(forNode->condition);
                 shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
                 while(dynamic_pointer_cast<BoolValue>(condition)->value == true){
+                    shared_ptr<Environment> forEnv = make_shared<Environment>(env);
+                    forEnv->initEnvironment();
                     for (auto& statement : forNode->forBody){
-                        evaluate(statement,env);
+                        evaluate(statement,forEnv);
                     }
                     shared_ptr<VariableAssignmentNode> incrementNode = dynamic_pointer_cast<VariableAssignmentNode>(forNode->increment);
                     evaluateVariableAssignmentNode(incrementNode, env);
@@ -447,23 +453,24 @@ class Interpreter{
 
             shared_ptr<R_Value> returnValue = makeNullValue();
 
-            for(auto& statement : functionValue->body){
-                if(statement->node == NodeType::ReturnNode){
-                    returnValue = evaluate(statement,functionEnvironment);
-                    break;
-                }else{
+            try{
+                for(auto& statement : functionValue->body){
                     evaluate(statement,functionEnvironment);
                 }
+            }catch (ReturnException &exception){
+                returnValue = exception.returnValue;
             }
             return returnValue;
         }
 
         shared_ptr<R_Value> evaluateReturnNode(shared_ptr<ReturnNode> returnNode, shared_ptr<Environment> environment){
+            shared_ptr<R_Value> returnValue;
             if(returnNode->returnValueExpression != nullptr){
-                return evaluate(returnNode->returnValueExpression,environment);
+                returnValue = evaluate(returnNode->returnValueExpression,environment);
             }else{
-                return makeNullValue();
+                returnValue = makeNullValue();
             }
+            throw ReturnException(returnValue);
         }
 
         shared_ptr<R_Value> evaluateWhileNode(shared_ptr<WhileNode> whileNode, shared_ptr<Environment> environment){
