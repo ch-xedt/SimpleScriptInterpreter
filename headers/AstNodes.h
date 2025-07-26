@@ -6,6 +6,7 @@
 #include "string"
 #include "memory"
 #include <memory>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -30,6 +31,8 @@ enum class NodeType{
     ArrayNode,
     ArrayCallNode,
     DoWhileNode,
+    BreakNode,
+    ContinueNode,
 };
 
 struct Statement{
@@ -320,6 +323,22 @@ struct DoWhileNode : public Statement{
         cout<<"\n"<<indent<<indent<<"Condition:";
         condition->print(depth+3);
         cout<<"\n"<<indent<<")";
+    }
+};
+
+struct BreakNode : public Expression{
+    BreakNode() : Expression(NodeType::BreakNode){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"[BreakNode]";
+    }
+};
+
+struct ContinueNode : public Expression{
+    ContinueNode() : Expression(NodeType::ContinueNode){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"[ContinueNode]";
     }
 };
 

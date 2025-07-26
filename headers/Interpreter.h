@@ -17,6 +17,8 @@ class Interpreter{
             shared_ptr<R_Value> returnValue;
             explicit ReturnException( shared_ptr<R_Value> returnValue) : returnValue(std::move(returnValue)){}
         };
+        struct BreakException{};
+        struct ContinueException{};
     public:
         shared_ptr<R_Value> evaluate(shared_ptr<Statement> astNode, shared_ptr<Environment> environment){
            switch(astNode->node){
@@ -114,6 +116,16 @@ class Interpreter{
                     {
                         shared_ptr<DoWhileNode> doWhileNode = dynamic_pointer_cast<DoWhileNode>(astNode);
                         return evaluateDoWhileNode(doWhileNode,environment);
+                    }
+                case NodeType::BreakNode:
+                    {
+                        shared_ptr<BreakNode> breakNode = dynamic_pointer_cast<BreakNode>(astNode);
+                        return evaluateBreak(breakNode, environment);
+                    }
+                case NodeType::ContinueNode:
+                    {
+                        shared_ptr<ContinueNode> continueNode = dynamic_pointer_cast<ContinueNode>(astNode);
+                        return evaluateContinue(continueNode, environment);
                     }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
@@ -386,17 +398,22 @@ class Interpreter{
                 shared_ptr<R_Value> initVar = evaluateVariableDeclarationNode(variableDeclNode,env);
                 shared_ptr<ConditionalNode> conditionNode = dynamic_pointer_cast<ConditionalNode>(forNode->condition);
                 shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
+                shared_ptr<R_Value> lastValue = makeNullValue();
                 while(dynamic_pointer_cast<BoolValue>(condition)->value == true){
                     shared_ptr<Environment> forEnv = make_shared<Environment>(env);
                     forEnv->initEnvironment();
-                    for (auto& statement : forNode->forBody){
-                        evaluate(statement,forEnv);
-                    }
+                    try{
+                        for (auto& statement : forNode->forBody){
+                            lastValue = evaluate(statement,forEnv);
+                        }
+                    }catch(BreakException&){
+                        break;
+                    }catch(ContinueException){}
                     shared_ptr<VariableAssignmentNode> incrementNode = dynamic_pointer_cast<VariableAssignmentNode>(forNode->increment);
                     evaluateVariableAssignmentNode(incrementNode, env);
                     condition = evaluateConditionalNode(conditionNode, env);
                 }
-                return makeNullValue();
+                return lastValue;
         }
 
         shared_ptr<R_Value> evaluateInputNode(shared_ptr<InputNode> inputNode, shared_ptr<Environment> environment){
@@ -479,8 +496,15 @@ class Interpreter{
             shared_ptr<ConditionalNode> conditionNode = dynamic_pointer_cast<ConditionalNode>(whileNode->condition);
             shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
             while(dynamic_pointer_cast<BoolValue>(condition)->value == true){
-                for (auto& statement : whileNode->whileBody){
-                    evaluate(statement,env);
+                try{
+                    for (auto& statement : whileNode->whileBody){
+                        evaluate(statement,env);
+                    }
+                }catch(BreakException&){
+                    break;
+                }catch(ContinueException&){
+                    condition = evaluateConditionalNode(conditionNode, env);
+                    continue;
                 }
                 condition = evaluateConditionalNode(conditionNode, env);
             }
@@ -571,18 +595,37 @@ class Interpreter{
         shared_ptr<R_Value> evaluateDoWhileNode(shared_ptr<DoWhileNode> doWhileNode, shared_ptr<Environment> environment){
             shared_ptr<Environment> env = make_shared<Environment>(environment);
             env->initEnvironment();
-            for(auto& statement : doWhileNode->doBody){
-                evaluate(statement,env);
-            }
             shared_ptr<ConditionalNode> conditionNode = dynamic_pointer_cast<ConditionalNode>(doWhileNode->condition);
-            shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
-            while(dynamic_pointer_cast<BoolValue>(condition)->value == true){
-                for (auto& statement : doWhileNode->doBody){
-                    evaluate(statement,env);
+            while (true) {
+                try {
+                    for (auto& statement : doWhileNode->doBody){
+                        evaluate(statement, env);
+                    }
+                } catch (BreakException&) {
+                    break;
+                } catch (ContinueException&) {
+                    // continue springt direkt zur Bedingungsprüfung
+                    shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
+                    if (!dynamic_pointer_cast<BoolValue>(condition)->value) {
+                        break;
+                    } else {
+                        continue;
+                    }
                 }
-                condition = evaluateConditionalNode(conditionNode, env);
+                shared_ptr<R_Value> condition = evaluateConditionalNode(conditionNode, env);
+                if (!dynamic_pointer_cast<BoolValue>(condition)->value) {
+                    break;
+                }
             }
             return makeNullValue();
+        }
+
+        shared_ptr<R_Value> evaluateBreak(shared_ptr<BreakNode> breakNode, shared_ptr<Environment> environment){
+            throw BreakException();
+        }
+
+        shared_ptr<R_Value> evaluateContinue(shared_ptr<ContinueNode> continueNode, shared_ptr<Environment> environment){
+            throw ContinueException();
         }
 };
 

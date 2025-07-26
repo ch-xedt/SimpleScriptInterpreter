@@ -66,6 +66,10 @@ class Parser{
                     return parseArray();
                 case TokenArt::Do:
                     return parseDoWhile();
+                case TokenArt::Break:
+                    return parseBreak();
+                case TokenArt::Continue:
+                    return parseContinue();
                 default:
                     return parseExpressions();
             }
@@ -367,6 +371,18 @@ class Parser{
             expect(TokenArt::CloseParen, ")");
             expect(TokenArt::Semicolon, ";");
             return make_shared<DoWhileNode>(doWhileBody, condition);
+        }
+
+        shared_ptr<Expression> parseBreak(){
+            thisEat();
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<BreakNode>();
+        }
+
+        shared_ptr<ContinueNode> parseContinue(){
+            thisEat();
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<ContinueNode>();
         }
 
     public:

@@ -215,6 +215,35 @@ do{
 <br>
 
 
+## **BREAK & CONTINUE :**
+
+The `break` and `continue` keywords are used to control the flow inside loops.<br>
+
+The `break` keywords immediately terminates the nearest enclosing loop, skipping any remaining iterations and continuing execution after the loop.
+
+```js
+for(let i = 0; i < 10; i = i + 1;){
+  if(i == 5){
+    break;      # Stop completely when i is 5 #
+  }
+}
+```
+The `continue` keywords skips the current iteration and jumps directly to the next loop check, leaving the loop running.
+
+```js
+for(let i = 0; i < 10; i = i + 1;){
+  if(i == 5){
+    continue;   # Skip current iteration and continues with next #
+  }
+  print(" " + i);
+}               # output : 0 1 2 3 4 6 7 8 9 #
+```
+
+
+
+<br>
+
+
 ### **User-INPUT :**
 
 By using the `in` - function you can get user inputs.
@@ -374,6 +403,9 @@ function exampleFunction(arr){
   print("You got : "); #Print something#
 
   for (let i = 0; i < 10; i = i+1;){
+    if(i == 5){
+      continue;
+    }
     print("" + arr[i] );
   }
 

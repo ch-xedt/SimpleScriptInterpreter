@@ -42,6 +42,8 @@ enum class TokenArt {
     GreaterEqual,//>=
     LesserEqual,//<=
     Do,
+    Break,
+    Continue,
     EndOfFile
 };
 
@@ -58,7 +60,9 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"return", TokenArt::Return},
     {"while", TokenArt::While},
     {"array", TokenArt::Array},
-    {"do", TokenArt::Do}
+    {"do", TokenArt::Do},
+    {"break", TokenArt::Break},
+    {"continue", TokenArt::Continue},
 };
 
 struct Token {

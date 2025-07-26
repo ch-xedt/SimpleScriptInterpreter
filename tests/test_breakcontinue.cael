@@ -1,0 +1,44 @@
+let b = true;
+let x = 0;
+
+while(b == true){
+    x = x + 1;
+    if(x == 5){
+        continue;
+    }else{
+        if(x == 10){
+            print("While Loop : " + x);
+            break;
+        }
+    }
+    print("While Loop : " + x);
+}
+print("");
+
+x = 0;
+do{
+    x = x + 1;
+    if(x == 10){
+        print("Do While Loop : " + x);
+        break;
+    }else{
+        if(x == 5){
+            continue;
+        }
+    }
+    print("Do While Loop : " + x);
+}while(b == true);
+print("");
+
+
+for(let i = 0; i < 10; i = i + 1;){
+    if(i == 2){
+        continue;
+    }else{
+        if(i == 5){
+            print("For Loop : " + i);
+            break;
+        }
+    }
+    print("For Loop : " + i);
+}
