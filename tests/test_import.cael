@@ -1,0 +1,10 @@
+let i = true;
+
+if(i == true){
+    import "test_lib.aer";
+    let sum = call add(1,2);
+    print(sum);
+}else{
+    print("i is false");
+}
+

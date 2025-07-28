@@ -16,6 +16,7 @@ class Fundament{
             Interpreter interpreter;
 
             environment->initEnvironment();
+            environment->currentRootPath = filename;
 
             program=parser.produceAST(reader.readFile(filename));
             program.print(1); 

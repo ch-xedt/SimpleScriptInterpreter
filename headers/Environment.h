@@ -9,6 +9,7 @@
 #include "unordered_map"
 #include "set"
 #include "Values.h"
+#include <string>
 
 using namespace std;
 
@@ -27,7 +28,13 @@ class Environment:public std::enable_shared_from_this<Environment>{
 
     public:
 
-        Environment(shared_ptr<Environment> parentEnv= nullptr ): parentEnvironment(parentEnv),variables(),constantVariablesNames(){}
+        Environment(shared_ptr<Environment> parentEnv= nullptr ): parentEnvironment(parentEnv),variables(),constantVariablesNames(){
+            if(parentEnv != nullptr){
+                currentRootPath = parentEnv->currentRootPath;
+            }
+        }
+
+        string currentRootPath = "";
 
         void initEnvironment(){
             initGlobalEnvironment();

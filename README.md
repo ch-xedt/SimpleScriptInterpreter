@@ -215,7 +215,7 @@ do{
 <br>
 
 
-## **BREAK & CONTINUE :**
+### **BREAK & CONTINUE :**
 
 The `break` and `continue` keywords are used to control the flow inside loops.<br>
 
@@ -236,7 +236,7 @@ for(let i = 0; i < 10; i = i + 1;){
     continue;   # Skip current iteration and continues with next #
   }
   print(" " + i);
-}               # output : 0 1 2 3 4 6 7 8 9 #
+}               # output : "0 1 2 3 4 6 7 8 9" #
 ```
 
 
@@ -329,6 +329,31 @@ Likewise, assigning a value from one array to another is only allowed if both ar
 array <5> numbers = [1, 2, 3, 4, 5];
 array <5> numbers2 = [0, 2, 3, 4, 5];
 numbers2[0] = numbers[0];
+```
+
+<br>
+
+
+### **IMPORT headers :**
+You can import headers using the `import` keyword and file path relative to the current main script file.<br>
+The file to be imported must have the `.aer` extension. <br>
+
+```js
+example.aer:
+
+function add(x,y){
+  return x + y;
+}
+```
+Once a header is imported, all of its variables and functions become available in the current script.
+
+```js
+main.cael:
+
+import "example.aer";
+
+let sum = call add(1, 2);
+print(sum);                      # output: "3" #  
 ```
 
 <br>

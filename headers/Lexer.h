@@ -44,6 +44,7 @@ enum class TokenArt {
     Do,
     Break,
     Continue,
+    Import,
     EndOfFile
 };
 
@@ -63,6 +64,7 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"do", TokenArt::Do},
     {"break", TokenArt::Break},
     {"continue", TokenArt::Continue},
+    {"import", TokenArt::Import},
 };
 
 struct Token {
@@ -118,6 +120,9 @@ class Lexer{
                 case TokenArt::GreaterEqual: return "GreaterEqualToken";
                 case TokenArt::LesserEqual: return "LesserEqualToken";
                 case TokenArt::Do: return "DoToken";
+                case TokenArt::Break: return "BreakToken";
+                case TokenArt::Continue: return "ContinueToken";
+                case TokenArt::Import: return "ImportToken";
                 case TokenArt::EndOfFile: return "EndOfFileToken";
                 default: return "UnknownToken";
             } 
@@ -214,7 +219,7 @@ class Lexer{
                     }
                 }else if (isAlpha(source[0])) {
                     string identifier = "";
-                    while (!source.empty() && isAlpha(source[0])) {
+                    while (!source.empty() && ((isAlpha(source[0]) || isNum(source[0]) || source[0] == '_'))) {
                         identifier += source[0];
                         source.erase(0, 1);
                     }

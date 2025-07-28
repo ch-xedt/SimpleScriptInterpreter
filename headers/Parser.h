@@ -70,6 +70,8 @@ class Parser{
                     return parseBreak();
                 case TokenArt::Continue:
                     return parseContinue();
+                case TokenArt::Import:
+                    return parseImport();
                 default:
                     return parseExpressions();
             }
@@ -85,8 +87,10 @@ class Parser{
                 if (thisToken().art == TokenArt::Number) {
                     double value = -stod(thisEat().value);
                     return make_shared<NumberNode>(value);
-                } else {
-                    cerr<<"\n[[Stage]]: Parsing     [[ERROR]] : Expected Number after '-', got "<<thisToken().value;
+                }else if(thisToken().art == TokenArt::Identifier){
+                    return make_shared<BinaryNode>(make_shared<NumberNode>(0), make_shared<IdentifierNode>(thisToken().value), "-");
+                }else {
+                    cerr<<"\n[[Stage]]: Parsing     [[ERROR]] : Expected Number or Identifier after '-', got "<<thisToken().value;
                     exit(1);
                 }
             }
@@ -195,10 +199,10 @@ class Parser{
         }
 
         shared_ptr<Expression> parseConditional(){
-            shared_ptr<Expression> left = parseMultiplicativeBinary();
+            shared_ptr<Expression> left = parseAdditivBinary();
             if(notTheEnd() && thisToken().value == "<" || thisToken().value == ">" || thisToken().value == "==" || thisToken().value == "<=" || thisToken().value == ">="){
                 string conditionOperator = thisEat().value;
-                shared_ptr<Expression> right = parseMultiplicativeBinary();
+                shared_ptr<Expression> right = parseAdditivBinary();
                 return make_shared<ConditionalNode>(left, right, conditionOperator);
             }else{
                 cerr<<"\n[[Stage]]: Parsing     [[ERROR]] : Expected conditional operator got "<<thisToken().value;
@@ -383,6 +387,13 @@ class Parser{
             thisEat();
             expect(TokenArt::Semicolon, ";");
             return make_shared<ContinueNode>();
+        }
+
+        shared_ptr<ImportNode> parseImport(){
+            thisEat();
+            string importPath = expect(TokenArt::String, "String ImportPath").value;
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<ImportNode>(importPath);
         }
 
     public:

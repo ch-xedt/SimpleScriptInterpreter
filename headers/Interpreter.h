@@ -4,10 +4,13 @@
 #include "Values.h"
 #include "AstNodes.h"
 #include "Environment.h"
+#include "Parser.h"
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <fstream>
 #include <string>
+#include "filesystem"
 
 using namespace std;
 
@@ -126,6 +129,11 @@ class Interpreter{
                     {
                         shared_ptr<ContinueNode> continueNode = dynamic_pointer_cast<ContinueNode>(astNode);
                         return evaluateContinue(continueNode, environment);
+                    }
+                case NodeType::ImportNode:
+                    {
+                        shared_ptr<ImportNode> importNode = dynamic_pointer_cast<ImportNode>(astNode);
+                        return evaluateImportNode(importNode, environment);
                     }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
@@ -626,6 +634,35 @@ class Interpreter{
 
         shared_ptr<R_Value> evaluateContinue(shared_ptr<ContinueNode> continueNode, shared_ptr<Environment> environment){
             throw ContinueException();
+        }
+
+        shared_ptr<R_Value> evaluateImportNode(shared_ptr<ImportNode> importNode, shared_ptr<Environment> environment){
+            namespace fs = std::filesystem;
+            fs::path currentRootFile(environment->currentRootPath);
+            fs::path currentDir = currentRootFile.parent_path();
+            fs::path importPath = currentDir / importNode->importPath;
+            if(importPath.extension() != ".aer"){
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid import file, expected .aer file\n";
+                exit(1);
+            }
+            std::ifstream file(importPath.string());
+            if(!file.is_open()){
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid import path, file ("<<importNode->importPath<<") not found\n";
+                exit(1);
+            }
+            string content = "";
+            string line = "";
+            while(getline(file,line)){
+                content += line;
+            }
+            file.close();            
+            Parser parser;
+            Program program;
+            program = parser.produceAST(content);
+            for(auto &statement : program.statements){
+                evaluate(statement, environment);
+            }
+            return makeNullValue();
         }
 };
 

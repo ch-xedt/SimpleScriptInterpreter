@@ -33,6 +33,7 @@ enum class NodeType{
     DoWhileNode,
     BreakNode,
     ContinueNode,
+    ImportNode,
 };
 
 struct Statement{
@@ -137,7 +138,7 @@ struct PrintNode : public Statement{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"PrintNode( ";
         value->print(depth+1);
-        cout<<"\n"<<indent<<" )";
+        cout<<"\n"<<indent<<")";
     }
 };
 
@@ -339,6 +340,15 @@ struct ContinueNode : public Expression{
     void print(int depth) const override{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"[ContinueNode]";
+    }
+};
+
+struct ImportNode : public Statement{
+    string importPath = "";
+    ImportNode(string importPath) : Statement(NodeType::ImportNode), importPath(importPath){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"ImportNode( "<<importPath<<" )\n";
     }
 };
 
