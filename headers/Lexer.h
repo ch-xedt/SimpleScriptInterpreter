@@ -45,6 +45,7 @@ enum class TokenArt {
     Break,
     Continue,
     Import,
+    System,
     EndOfFile
 };
 
@@ -65,6 +66,7 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"break", TokenArt::Break},
     {"continue", TokenArt::Continue},
     {"import", TokenArt::Import},
+    {"sys", TokenArt::System},
 };
 
 struct Token {
@@ -123,6 +125,7 @@ class Lexer{
                 case TokenArt::Break: return "BreakToken";
                 case TokenArt::Continue: return "ContinueToken";
                 case TokenArt::Import: return "ImportToken";
+                case TokenArt::System: return "SystemToken";
                 case TokenArt::EndOfFile: return "EndOfFileToken";
                 default: return "UnknownToken";
             } 

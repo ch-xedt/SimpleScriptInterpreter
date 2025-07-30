@@ -34,6 +34,7 @@ enum class NodeType{
     BreakNode,
     ContinueNode,
     ImportNode,
+    SystemNode,
 };
 
 struct Statement{
@@ -349,6 +350,15 @@ struct ImportNode : public Statement{
     void print(int depth) const override{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"ImportNode( "<<importPath<<" )\n";
+    }
+};
+
+struct SystemNode : public Statement{
+    string systemCommand = "";
+    SystemNode(string systemCommand) : Statement(NodeType::SystemNode), systemCommand(systemCommand){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"SystemNode( "<<systemCommand<<" )\n";
     }
 };
 

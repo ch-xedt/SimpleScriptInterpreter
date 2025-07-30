@@ -135,6 +135,11 @@ class Interpreter{
                         shared_ptr<ImportNode> importNode = dynamic_pointer_cast<ImportNode>(astNode);
                         return evaluateImportNode(importNode, environment);
                     }
+                case NodeType::SystemNode:
+                    {
+                        shared_ptr<SystemNode> systemNode = dynamic_pointer_cast<SystemNode>(astNode);
+                        return evaluateSystemNode(systemNode, environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -663,6 +668,19 @@ class Interpreter{
                 evaluate(statement, environment);
             }
             return makeNullValue();
+        }
+
+        shared_ptr<R_Value> evaluateSystemNode(shared_ptr<SystemNode> systemNode, shared_ptr<Environment> environment){
+            int status = system(systemNode->systemCommand.c_str());
+            if (status < 0) {
+                cerr << "\n[[Stage]] : Interpreting  [[ERROR]] : System command failed, command: "<<systemNode->systemCommand<<"\n";
+                exit(1);
+            }else if(status > 0){
+                cerr << "\n[[Stage]] : Interpreting  [[ERROR]] : System prozess failed, command: "<<systemNode->systemCommand<<"\n";
+                exit(1);
+            }else{
+                return makeNullValue();
+            }
         }
 };
 

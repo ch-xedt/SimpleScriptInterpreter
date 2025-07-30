@@ -359,6 +359,19 @@ print(sum);                      # output: "3" #
 <br>
 
 
+### **SYSTEM commands:**
+
+The `sys` keyword allows you to execute external operating system commands directly from the interpreter.<br>
+You can use it to run shell/terminal commands, open programs, or execute scripts.<br>
+The available commands depend on the operating system.
+
+```js
+sys("echo Hello World!");
+```
+
+<br>
+
+
 ## Planned Features
 
 - Support for copying arrays

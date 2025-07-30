@@ -1,0 +1,5 @@
+let i = true;
+
+if(i == true){
+    sys("echo Hello World!");
+}

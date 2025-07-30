@@ -72,6 +72,8 @@ class Parser{
                     return parseContinue();
                 case TokenArt::Import:
                     return parseImport();
+                case TokenArt::System:
+                    return parseSystem();
                 default:
                     return parseExpressions();
             }
@@ -394,6 +396,15 @@ class Parser{
             string importPath = expect(TokenArt::String, "String ImportPath").value;
             expect(TokenArt::Semicolon, ";");
             return make_shared<ImportNode>(importPath);
+        }
+
+        shared_ptr<SystemNode> parseSystem(){
+            thisEat();
+            expect(TokenArt::OpenParen, "(");
+            string systemCommand = expect(TokenArt::String, "String SystemCommand").value;
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<SystemNode>(systemCommand);
         }
 
     public:
