@@ -2,9 +2,6 @@
 #define AST_H_v1
 
 #include "iostream"
-#include "vector"
-#include "string"
-#include "memory"
 #include <memory>
 #include <string>
 #include <vector>
@@ -35,6 +32,7 @@ enum class NodeType{
     ContinueNode,
     ImportNode,
     SystemNode,
+    NotNode,
 };
 
 struct Statement{
@@ -359,6 +357,17 @@ struct SystemNode : public Statement{
     void print(int depth) const override{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"SystemNode( "<<systemCommand<<" )\n";
+    }
+};
+
+struct NotNode : public Expression{
+    shared_ptr<Expression> operand;
+    NotNode(shared_ptr<Expression> operand) : Expression(NodeType::NotNode), operand(operand){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"NotNode( ";
+        operand->print(depth+1);
+        cout<<"\n"<<indent<<")";
     }
 };
 

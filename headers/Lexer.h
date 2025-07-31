@@ -41,6 +41,9 @@ enum class TokenArt {
     Same,//==
     GreaterEqual,//>=
     LesserEqual,//<=
+    And,//&&
+    Or,//||
+    Bang,//!
     Do,
     Break,
     Continue,
@@ -121,6 +124,9 @@ class Lexer{
                 case TokenArt::Same: return "SameToken";
                 case TokenArt::GreaterEqual: return "GreaterEqualToken";
                 case TokenArt::LesserEqual: return "LesserEqualToken";
+                case TokenArt::And: return "AndToken";
+                case TokenArt::Or: return "OrToken";
+                case TokenArt::Bang: return "BangToken";
                 case TokenArt::Do: return "DoToken";
                 case TokenArt::Break: return "BreakToken";
                 case TokenArt::Continue: return "ContinueToken";
@@ -212,6 +218,27 @@ class Lexer{
                         tokens.push_back({ "<", TokenArt::Lesser });
                         source.erase(0, 1); 
                     }
+                }else if (source[0] == '&') {
+                    if (!source.empty() && source[1] == '&') {
+                        tokens.push_back({ "&&", TokenArt::And });
+                        source.erase(0, 2);
+                        continue;
+                    }else{
+                        cerr<<"[[Stage]] : Lexing  [[ERROR]] : Invalid token '&'. Missing second '&'.";
+                        exit(1);
+                    }
+                }else if (source[0] == '|') {
+                    if (!source.empty() && source[1] == '|') {
+                        tokens.push_back({ "||", TokenArt::Or });
+                        source.erase(0, 2);
+                        continue;
+                    }else{
+                        cerr<<"[[Stage]] : Lexing  [[ERROR]] : Invalid token '|'. Missing second '|'.";
+                        exit(1);
+                    }
+                }else if (source[0] == '!') {        
+                    tokens.push_back({ "!", TokenArt::Bang });
+                    source.erase(0, 1);
                 }else if(source[0] == '#'){
                     source.erase(0, 1);
                     while (!source.empty() && source[0] != '#') {

@@ -140,6 +140,11 @@ class Interpreter{
                         shared_ptr<SystemNode> systemNode = dynamic_pointer_cast<SystemNode>(astNode);
                         return evaluateSystemNode(systemNode, environment);
                     }
+                case NodeType::NotNode:
+                    {
+                        shared_ptr<NotNode> notNode = dynamic_pointer_cast<NotNode>(astNode);
+                        return evaluateNotNode(notNode, environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -187,6 +192,8 @@ class Interpreter{
                 return evaluateCaseStringBooleanBinaryNode(binaryNode, dynamic_pointer_cast<BoolValue>(left), dynamic_pointer_cast<StringValue>(right));
             }else if(left->type == ValueType::StringValue && right -> type == ValueType::BoolValue){
                 return evaluateCaseStringBooleanBinaryNode(binaryNode, dynamic_pointer_cast<StringValue>(left), dynamic_pointer_cast<BoolValue>(right));
+            }else if(left->type == ValueType::BoolValue && right -> type == ValueType::BoolValue){
+                return evaluateCaseBooleanBinaryNode(binaryNode, dynamic_pointer_cast<BoolValue>(left), dynamic_pointer_cast<BoolValue>(right));
             }else{
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid binary operator / Case not found " <<binaryNode->op<<" \n";
                 exit(1);
@@ -301,6 +308,18 @@ class Interpreter{
             return result;
         }
 
+        shared_ptr<R_Value> evaluateCaseBooleanBinaryNode(shared_ptr<BinaryNode> binaryNode, shared_ptr<BoolValue> left, shared_ptr<BoolValue> right){
+            shared_ptr<BoolValue> result = make_shared<BoolValue>();
+            if(binaryNode->op == "&&"){
+                result->value = left->value && right->value;
+            }else if(binaryNode->op == "||"){
+                result->value = left->value || right->value;
+            }else{
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid binary operator " <<binaryNode->op<<" \n";
+                exit(1);
+            }
+            return result;
+        }
 
         shared_ptr<R_Value> evaluateVariableDeclarationNode(shared_ptr<VariableDeclarationNode> variableDeclarationNode,shared_ptr<Environment> environment){
             shared_ptr<R_Value> result = variableDeclarationNode->value ? evaluate(variableDeclarationNode->value, environment) : makeNullValue();
@@ -430,18 +449,16 @@ class Interpreter{
         }
 
         shared_ptr<R_Value> evaluateInputNode(shared_ptr<InputNode> inputNode, shared_ptr<Environment> environment){
+            string input = "";
             if(inputNode->inputType == "n"){
-                string input;
                 getline(cin,input);
                 shared_ptr<R_Value> inputValue = makeNumberValue(stod(input));
                 environment->assignVariable(inputNode->variableName, inputValue );
             }else if(inputNode->inputType == "s"){
-                string input;
                 getline(cin,input);
                 shared_ptr<R_Value> inputValue = makeStringValue(input);
                 environment->assignVariable(inputNode->variableName, inputValue );
             }else if(inputNode->inputType == "b"){
-                string input;
                 cin>>input;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 if(input == "true" || input == "True" || input == "1" || input == "y" || input == "Y"){
@@ -680,6 +697,17 @@ class Interpreter{
                 exit(1);
             }else{
                 return makeNullValue();
+            }
+        }
+
+        shared_ptr<R_Value> evaluateNotNode(shared_ptr<NotNode> notNode, shared_ptr<Environment> environment){
+            shared_ptr<R_Value> operand = evaluate(notNode->operand, environment);
+            if(operand->type == ValueType::BoolValue){
+                shared_ptr<BoolValue> result = make_shared<BoolValue>(!dynamic_pointer_cast<BoolValue>(operand)->value);
+                return result;
+            }else{
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid operand type for NotNode, expected BoolValue, got "<<ValueTypeToString(operand->type)<<"\n";
+                exit(1);
             }
         }
 };

@@ -40,7 +40,6 @@ class Parser{
         }
 
         shared_ptr<Statement> parseStatements(){
-
             switch(thisToken().art){
                 case TokenArt::Let:
                     return parseVariableDeclaration(false);
@@ -142,10 +141,10 @@ class Parser{
         }
 
         shared_ptr<Expression> parseMultiplicativeBinary(){
-            shared_ptr<Expression> left = parsePrimitives();
+            shared_ptr<Expression> left = parseUnary();
             while(notTheEnd() && (thisToken().value=="*" || thisToken().value=="/" || thisToken().value=="%" || thisToken().value=="^")){
                 string operatorValue = thisEat().value;
-                shared_ptr<Expression> right = parsePrimitives();
+                shared_ptr<Expression> right = parseUnary();
                 left=make_shared<BinaryNode>(left,right,operatorValue);
             } 
             return left;
@@ -176,7 +175,7 @@ class Parser{
         }
 
         shared_ptr<Expression> parseVariableAssignment(){
-            shared_ptr<Expression> left = parseAdditivBinary();
+            shared_ptr<Expression> left = parseOr();
             if(notTheEnd() && thisToken().art== TokenArt::Equal){
                 thisEat();
                 if(thisToken().art == TokenArt::Call){
@@ -201,15 +200,7 @@ class Parser{
         }
 
         shared_ptr<Expression> parseConditional(){
-            shared_ptr<Expression> left = parseAdditivBinary();
-            if(notTheEnd() && thisToken().value == "<" || thisToken().value == ">" || thisToken().value == "==" || thisToken().value == "<=" || thisToken().value == ">="){
-                string conditionOperator = thisEat().value;
-                shared_ptr<Expression> right = parseAdditivBinary();
-                return make_shared<ConditionalNode>(left, right, conditionOperator);
-            }else{
-                cerr<<"\n[[Stage]]: Parsing     [[ERROR]] : Expected conditional operator got "<<thisToken().value;
-                exit(1);
-            }
+            return parseOr();
         }
 
         shared_ptr<Statement> parseIf(){
@@ -405,6 +396,45 @@ class Parser{
             expect(TokenArt::CloseParen, ")");
             expect(TokenArt::Semicolon, ";");
             return make_shared<SystemNode>(systemCommand);
+        }
+
+        shared_ptr<Expression> parseComparison(){
+            shared_ptr<Expression> left = parseAdditivBinary();
+            if(notTheEnd() && (thisToken().value == "<" || thisToken().value == ">" || thisToken().value == "==" || thisToken().value == "<=" || thisToken().value == ">=" || thisToken().value == "!=")){
+                string conditionOperator = thisEat().value;
+                shared_ptr<Expression> right = parseAdditivBinary();
+                return make_shared<ConditionalNode>(left, right, conditionOperator);
+            }
+            return left;
+        }
+
+        shared_ptr<Expression> parseAnd(){
+            shared_ptr<Expression> left = parseComparison();
+            while (notTheEnd() && thisToken().art == TokenArt::And) {
+                string operatorValue = thisEat().value;
+                shared_ptr<Expression> right = parseComparison();
+                left = make_shared<BinaryNode>(left, right, operatorValue);
+            }
+            return left;
+        }
+
+        shared_ptr<Expression> parseOr(){
+            shared_ptr<Expression> left = parseAnd();
+            while (notTheEnd() && thisToken().art == TokenArt::Or) {
+                string operatorValue = thisEat().value;
+                shared_ptr<Expression> right = parseAnd();
+                left = make_shared<BinaryNode>(left, right, operatorValue);
+            }
+            return left;
+        }
+
+        shared_ptr<Expression> parseUnary(){
+            if(thisToken().art == TokenArt::Bang){
+                thisEat();
+                shared_ptr<Expression> right = parseUnary();
+                return make_shared<NotNode>(right);
+            }
+            return parsePrimitives();
         }
 
     public:

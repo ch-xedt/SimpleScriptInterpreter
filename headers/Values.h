@@ -23,6 +23,25 @@ enum class ValueType{
     ArrayValue,
 };
 
+inline string ValueTypeToString(ValueType type){
+    switch(type){
+        case ValueType::NullValue:
+            return "NullValue";
+        case ValueType::NumberValue:
+            return "NumberValue";
+        case ValueType::StringValue:
+            return "StringValue";
+        case ValueType::BoolValue:
+            return "BoolValue";
+        case ValueType::FunctionValue:
+            return "FunctionValue";
+        case ValueType::ArrayValue:
+            return "ArrayValue";
+        default:
+            return "Unknown";
+    }
+}
+
 struct R_Value{
     ValueType type; 
     R_Value(ValueType valT):type(valT){}

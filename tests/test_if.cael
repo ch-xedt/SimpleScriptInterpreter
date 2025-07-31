@@ -1,17 +1,8 @@
-let x = 1;
-let w = x + 1;
+let b = true;
 
-if( w < x ){
-  print(w + " is smaller than " + x);
+if(b && (5<3 || !(b == false))){
+  print("Hello World");
 }else{
-  if(w == x){
-    print("w as big as x");
-  }else{
-    let f = x;
-    if(w > x){
-      let s = 12;
-      print("w (" + w + ") bigger than x (" + f + ")");
-    }
-  }
+  print("Goodbye World");
 }
 

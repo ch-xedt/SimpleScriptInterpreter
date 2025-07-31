@@ -124,10 +124,11 @@ print("It`s" + (2024 + (3%2)) );          # output: "It´s 2025" #
 <br>
 
 
-### **IF - Statements :**
+### **IF-Statements & Conditions :**
 
 IF-Statements allow you to execute conditional statements. <br>
-If the given condition in the parentheses is true, the corresponding block is executed.
+If the given condition in the parentheses is true, the corresponding block is executed in a local scope.
+
 ```js
 let x = 5;
 let y = 2;
@@ -151,10 +152,30 @@ With the ELSE-Statements, a code block can be executed if the condition is not m
 let x = 1;
 let y = 10;
 
-if( x > y ){
-  print("x is bigger than y");
+if( x >= y ){
+  print("x is greater than or equal to y");
 }else{
   print("x is smaller than y");
+}
+```
+
+Conditions can be combined using the logical AND-operator `&&` and the logical OR-operator `||`.
+
+```js
+let x = 5;
+let y = 2;
+
+if( x > y && x < 10 ){
+  print("x is bigger than y and x is smaller than 10");
+}
+```
+The NOT-operator `!` negates a condition.
+```js
+let x = 2;
+let y = 5;
+
+if( !(x > y) ){
+  print("x is not bigger than y");
 }
 ```
 
