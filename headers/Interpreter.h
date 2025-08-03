@@ -160,6 +160,11 @@ class Interpreter{
                         shared_ptr<MemberAccessNode> memberAccessNode = dynamic_pointer_cast<MemberAccessNode>(astNode);
                         return evaluateMemberAccessNode(memberAccessNode, environment);
                     }
+                case NodeType::RepeatNode:
+                    {
+                        shared_ptr<RepeatNode> repeatNode = dynamic_pointer_cast<RepeatNode>(astNode);
+                        return evaluateRepeatNode(repeatNode, environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -746,7 +751,7 @@ class Interpreter{
             }
         }
 
-                shared_ptr<R_Value> evaluateFrameNode(shared_ptr<FrameNode> frameNode, shared_ptr<Environment> environment){
+        shared_ptr<R_Value> evaluateFrameNode(shared_ptr<FrameNode> frameNode, shared_ptr<Environment> environment){
             unordered_map<string,shared_ptr<R_Value>> frameProperties;
             string frameName = frameNode->frameName;
             set<string> constantProperties;
@@ -784,6 +789,31 @@ class Interpreter{
             shared_ptr<FrameValue> frameValue = dynamic_pointer_cast<FrameValue>(frame);
             shared_ptr<R_Value> result = frameValue->frameProperties[memberAccessNode->memberName];
             return result;
+        }
+
+        shared_ptr<R_Value> evaluateRepeatNode(shared_ptr<RepeatNode> repeatNode, shared_ptr<Environment> environment){
+            shared_ptr<R_Value> count = evaluate(repeatNode->repeatCount, environment);
+            if(count->type != ValueType::NumberValue){
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid value type for RepeatNode, expected NumberValue, got "<<ValueTypeToString(count->type)<<"\n";
+                exit(1);
+            }
+            int repeatCount = dynamic_pointer_cast<NumberValue>(count)->value;
+            while(repeatCount != 0){
+                shared_ptr<Environment> newEnv = make_shared<Environment>(environment);
+                newEnv->initEnvironment();
+                try{
+                    for(auto &statement : repeatNode->repeatBody){
+                        evaluate(statement, newEnv);
+                    }
+                }catch(BreakException){
+                    break;
+                }catch(ContinueException){
+                    repeatCount--;
+                    continue;
+                }
+                repeatCount--;
+            }
+            return makeNullValue();
         }
 
 };

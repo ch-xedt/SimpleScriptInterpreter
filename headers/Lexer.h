@@ -51,6 +51,7 @@ enum class TokenArt {
     System,
     Frame,
     New,
+    Repeat,
     EndOfFile
 };
 
@@ -74,6 +75,7 @@ inline unordered_map<string, TokenArt> KEYWORDS = { //reserved Keywords
     {"sys", TokenArt::System},
     {"frame", TokenArt::Frame},
     {"new", TokenArt::New},
+    {"repeat", TokenArt::Repeat},
 };
 
 struct Token {

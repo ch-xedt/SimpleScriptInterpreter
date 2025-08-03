@@ -182,6 +182,20 @@ if( !(x > y) ){
 <br>
 
 
+### **REPEAT-Loops :**
+REPEAT-Loops allow you to execute a code block a specific number of times.<br>
+The loop will be executed as many times as the given number of times.
+
+```js
+repeat(5){
+  print("Hello World!");
+}
+```
+
+
+<br>
+
+
 ### **FOR-Loops :**
 FOR-Loops allow you to execute a code block multiple times.<br>
 They consist of three parts: initialization, condition, and update, which are all defined in the loop header.<br>
@@ -259,8 +273,6 @@ for(let i = 0; i < 10; i = i + 1;){
   print(" " + i);
 }               # output: "0 1 2 3 4 6 7 8 9" #
 ```
-
-
 
 <br>
 

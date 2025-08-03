@@ -36,6 +36,7 @@ enum class NodeType{
     FrameNode,
     NewNode,
     MemberAccessNode,
+    RepeatNode,
 };
 
 struct Statement{
@@ -407,5 +408,23 @@ struct MemberAccessNode : public Expression{
         cout<<"\n"<<indent<<"MemberAccessNode( "<<frameName<<"."<<memberName<<" )";
     }
 };
+
+struct RepeatNode : public Statement{
+    vector<shared_ptr<Statement>> repeatBody;
+    shared_ptr<NumberNode> repeatCount;
+    RepeatNode(vector<shared_ptr<Statement>> repeatBody, shared_ptr<NumberNode> repeatCount) : Statement(NodeType::RepeatNode), repeatBody(repeatBody), repeatCount(repeatCount){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"RepeatNode( ";
+        cout<<"\n"<<indent<<indent<<"RepeatBody:";
+        for(auto &index : repeatBody){
+            index->print(depth+3);
+        }
+        cout<<"\n"<<indent<<indent<<"RepeatCount:";
+        repeatCount->print(depth+3);
+        cout<<"\n"<<indent<<")";
+    }
+};
+
 
 #endif

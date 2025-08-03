@@ -75,6 +75,8 @@ class Parser{
                     return parseSystem();
                 case TokenArt::Frame:
                     return parseFrame();
+                case TokenArt::Repeat:
+                    return parseRepeat();
                 default:
                     return parseExpressions();
             }
@@ -472,6 +474,22 @@ class Parser{
             expect(TokenArt::Dot, ".");
             string memberName = expect(TokenArt::Identifier, "Member Identifier").value;
             return make_shared<MemberAccessNode>(frameName, memberName);
+        }
+
+        shared_ptr<Statement> parseRepeat(){
+            thisEat();
+            expect(TokenArt::OpenParen, "(");
+            int count = stoi(expect(TokenArt::Number, "Repeat Count Number Expression").value);
+            shared_ptr<NumberNode> repeatCount = make_shared<NumberNode>(count);
+            expect(TokenArt::CloseParen, ")");
+            expect(TokenArt::OpenBrace, "{");
+            vector<shared_ptr<Statement>> repeatBody;
+            while (notTheEnd() && thisToken().art != TokenArt::CloseBrace){
+                repeatBody.push_back(parseStatements());
+            }
+            expect(TokenArt::CloseBrace, "}");
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<RepeatNode>(repeatBody, repeatCount);
         }
 
     public:
