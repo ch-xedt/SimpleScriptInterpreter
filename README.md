@@ -34,7 +34,7 @@ const pi = 3.1415;
 
 ### **Data TYPES and VALUES :**
 
-The type of the variable is determined automatically and can therefore change during runtime, unless it`s a constant variable.
+The type of the variable is determined automatically and can therefore change during runtime, unless it's a constant variable.
 
 ```js
 let x = "Hello World";        # String-type #
@@ -57,7 +57,7 @@ let w = null;                 # Null value #
 ### **BINARY operations :**
 
 Binary operations such as addition, subtraction, multiplication, division, and modulo are supported.<br>
-The arithmetic follows the usual arithmetic rules. Pemdas. <br>
+The arithmetic follows the usual arithmetic rules (PEMDAS). <br>
 Expressions in parentheses are treated first.
 
 ```js
@@ -86,7 +86,7 @@ let z = x + y + " apples"             # "There are 3 apples" #
 let isItTrue = true;
 z = "That is " + isItTrue;            # "That is true" #
 ```
-Multiplication operation between strings and numbers allows you concatenating a string multiple times.
+Multiplication operation between strings and numbers allows you to concatenate a string multiple times.
 
 ```js
 let x = "Hello" * 3;               # "HelloHelloHello" #
@@ -249,7 +249,7 @@ for(let i = 0; i < 10; i = i + 1;){
   }
 }
 ```
-The `continue` keywords skips the current iteration and jumps directly to the next loop check, leaving the loop running.
+The `continue` keywords skips the current iteration and jumps directly to the next loop check, while keeping the loop running.
 
 ```js
 for(let i = 0; i < 10; i = i + 1;){
@@ -257,7 +257,7 @@ for(let i = 0; i < 10; i = i + 1;){
     continue;   # Skip current iteration and continues with next #
   }
   print(" " + i);
-}               # output : "0 1 2 3 4 6 7 8 9" #
+}               # output: "0 1 2 3 4 6 7 8 9" #
 ```
 
 
@@ -307,7 +307,7 @@ print("The sum of 1 and 2 is: " + sum);
 ### **COMMENTS :**
 Comments are used to add explanatory text to your code. <br>
 Comments are ignored by the interpreter and do not affect the execution of the code. <br>
-Comments are writen between `##`.
+Comments are written between `##`.
 
 ```js
 let i = 0; #This is a comment#
@@ -393,12 +393,34 @@ sys("echo Hello World!");
 <br>
 
 
+### **FRAMES :**
+Frames are used to create custom data types with properties <br>
+Frames are defined using the `frame` keyword, followed by the frame name and its properties in curly braces.
+```js
+frame Person {
+  let name = "";
+  let age = 0;
+}
+```
+The `new` keyword is used to create a new instance of a frame.
+
+ ```js
+let max = new Person;
+max.name = "Max";
+max.age = 18;
+
+print(max.name + " is " + max.age + " years old");    # output: "Max is 18 years old" #
+ ```
+
+
+<br>
+
+
 ## Planned Features
 
 - Support for copying arrays
 - Support for multi-dimensional arrays
-- Support for objects
-- Nativ Functions
+- Native Functions
 
 
 <br>

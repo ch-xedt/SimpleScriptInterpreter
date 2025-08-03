@@ -145,6 +145,21 @@ class Interpreter{
                         shared_ptr<NotNode> notNode = dynamic_pointer_cast<NotNode>(astNode);
                         return evaluateNotNode(notNode, environment);
                     }
+                case NodeType::FrameNode:
+                    {
+                        shared_ptr<FrameNode> frameNode = dynamic_pointer_cast<FrameNode>(astNode);
+                        return evaluateFrameNode(frameNode, environment);
+                    }
+                case NodeType::NewNode:
+                    {
+                        shared_ptr<NewNode> newNode = dynamic_pointer_cast<NewNode>(astNode);
+                        return evaluateNewNode(newNode, environment);
+                    }
+                case NodeType::MemberAccessNode:
+                    {
+                        shared_ptr<MemberAccessNode> memberAccessNode = dynamic_pointer_cast<MemberAccessNode>(astNode);
+                        return evaluateMemberAccessNode(memberAccessNode, environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -327,7 +342,7 @@ class Interpreter{
         }
 
         shared_ptr<R_Value> evaluateVariableAssignmentNode(shared_ptr<VariableAssignmentNode> variableAssignmentNode, shared_ptr<Environment> environment){
-            if(variableAssignmentNode->assignmentVariable->node != NodeType::IdentifierNode && variableAssignmentNode->assignmentVariable->node != NodeType::ArrayCallNode){
+            if(variableAssignmentNode->assignmentVariable->node != NodeType::IdentifierNode && variableAssignmentNode->assignmentVariable->node != NodeType::ArrayCallNode && variableAssignmentNode->assignmentVariable->node != NodeType::MemberAccessNode){
                 cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid assignment value type \n";
                 exit(1);
             }
@@ -350,6 +365,26 @@ class Interpreter{
             }else if(variableAssignmentNode->assignmentVariable->node == NodeType::IdentifierNode){
                 const string variableName = dynamic_pointer_cast<IdentifierNode>(variableAssignmentNode->assignmentVariable)->value;
                 return environment->assignVariable(variableName,evaluate(variableAssignmentNode->value,environment));
+            }else if(variableAssignmentNode->assignmentVariable->node == NodeType::MemberAccessNode){
+                shared_ptr<MemberAccessNode> memberAccessNode = dynamic_pointer_cast<MemberAccessNode>(variableAssignmentNode->assignmentVariable);
+                shared_ptr<R_Value> frame = environment->lookupVariable(memberAccessNode->frameName);
+                if(frame->type != ValueType::FrameValue){
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid value type for MemberAccessNode, expected FrameValue, got "<<ValueTypeToString(frame->type)<<"\n";
+                    exit(1);
+                }
+                shared_ptr<FrameValue> frameValue = dynamic_pointer_cast<FrameValue>(frame);
+                if(frameValue->constantProperties.find(memberAccessNode->memberName) != frameValue->constantProperties.end()){
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Cannot assign to constant property '"<<memberAccessNode->memberName<<"'\n";
+                    exit(1);
+                }
+                shared_ptr<R_Value> assignValue = evaluate(variableAssignmentNode->value,environment);
+                    if(frameValue->frameProperties.find(memberAccessNode->memberName) != frameValue->frameProperties.end()){
+                        frameValue->frameProperties[memberAccessNode->memberName] = assignValue;
+                        return assignValue;
+                    }else{
+                        cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Member '"<<memberAccessNode->memberName<<"' not found in frame '"<<memberAccessNode->frameName<<"'\n";
+                        exit(1);
+                    }
             }else{
                 return makeNullValue();
             }
@@ -710,6 +745,47 @@ class Interpreter{
                 exit(1);
             }
         }
+
+                shared_ptr<R_Value> evaluateFrameNode(shared_ptr<FrameNode> frameNode, shared_ptr<Environment> environment){
+            unordered_map<string,shared_ptr<R_Value>> frameProperties;
+            string frameName = frameNode->frameName;
+            set<string> constantProperties;
+            for(auto &property : frameNode->frameProperties){
+                if (property->node == NodeType::VariableDeclarationNode) {
+                    shared_ptr<VariableDeclarationNode> varDecl = dynamic_pointer_cast<VariableDeclarationNode>(property);
+                    frameProperties[varDecl->name] = evaluate(varDecl->value, environment);
+                    if(varDecl->IsConstant){
+                        constantProperties.insert(varDecl->name);
+                    }
+                }else{
+                    cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid property type for FrameNode, expected VariableDeclarationNode\n";
+                    exit(1);
+                }
+            }
+            shared_ptr<FrameValue> result = make_shared<FrameValue>(frameName, frameProperties);
+            result->constantProperties = constantProperties;
+            environment->declareVariable(frameName, result);
+            return makeNullValue();
+        }
+
+        shared_ptr<R_Value> evaluateNewNode(shared_ptr<NewNode> newNode, shared_ptr<Environment> environment){
+            shared_ptr<FrameValue> frameValue = dynamic_pointer_cast<FrameValue>(environment->lookupVariable(newNode->frameName));
+            shared_ptr<FrameValue> result = make_shared<FrameValue>(frameValue->frameName, frameValue->frameProperties);
+            result->constantProperties = frameValue->constantProperties;
+            return result;
+        }
+
+        shared_ptr<R_Value> evaluateMemberAccessNode(shared_ptr<MemberAccessNode> memberAccessNode, shared_ptr<Environment> environment){
+            shared_ptr<R_Value> frame = environment->lookupVariable(memberAccessNode->frameName);
+            if(frame->type != ValueType::FrameValue){
+                cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid value type for MemberAccessNode, expected FrameValue, got "<<ValueTypeToString(frame->type)<<"\n";
+                exit(1);
+            }
+            shared_ptr<FrameValue> frameValue = dynamic_pointer_cast<FrameValue>(frame);
+            shared_ptr<R_Value> result = frameValue->frameProperties[memberAccessNode->memberName];
+            return result;
+        }
+
 };
 
 #endif 

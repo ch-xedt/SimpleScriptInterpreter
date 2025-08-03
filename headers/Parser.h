@@ -73,6 +73,8 @@ class Parser{
                     return parseImport();
                 case TokenArt::System:
                     return parseSystem();
+                case TokenArt::Frame:
+                    return parseFrame();
                 default:
                     return parseExpressions();
             }
@@ -113,6 +115,8 @@ class Parser{
                 case TokenArt::Identifier:
                     if(peekToken(1).art == TokenArt::OpenBracket) {
                         return parseArrayCall();
+                    }else if(peekToken(1).art == TokenArt::Dot) {
+                        return parseMemberAccess();
                     }
                     return make_shared<IdentifierNode>(thisEat().value);
                 case TokenArt::OpenParen:{
@@ -167,6 +171,9 @@ class Parser{
             if(thisToken().art == TokenArt::Call){
                 shared_ptr<Expression> assignValue = parseFunctionCall();
                 return make_shared<VariableDeclarationNode>(variableName, assignValue, isConst);
+            }else if(thisToken().art == TokenArt::New){
+                shared_ptr<Expression> assignValue = parseNew();
+                return make_shared<VariableDeclarationNode>(variableName, assignValue, isConst);
             }else{
                 shared_ptr<Expression> assignValue = parseExpressions();
                 expect(TokenArt::Semicolon, ";");
@@ -181,6 +188,9 @@ class Parser{
                 if(thisToken().art == TokenArt::Call){
                     shared_ptr<Expression> assignValue = parseFunctionCall();
                     return make_shared<VariableAssignmentNode>(left, assignValue);	
+                }else if (thisToken().art == TokenArt::New){
+                    shared_ptr<Expression> assignValue = parseNew();
+                    return make_shared<VariableAssignmentNode>(left, assignValue);
                 }else{
                     shared_ptr<Expression> assignValue = parseAdditivBinary();
                     expect(TokenArt::Semicolon, ";");
@@ -435,6 +445,33 @@ class Parser{
                 return make_shared<NotNode>(right);
             }
             return parsePrimitives();
+        }
+
+                shared_ptr<Expression> parseFrame(){
+            thisEat();
+            string frameName  = expect(TokenArt::Identifier, "Frame Identifier").value;
+            expect(TokenArt::OpenBrace, "{");
+            vector<shared_ptr<Statement>> frameProperties;
+            while (notTheEnd() && thisToken().art != TokenArt::CloseBrace){
+                frameProperties.push_back(parseStatements());
+            }
+            expect(TokenArt::CloseBrace, "}");
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<FrameNode>(frameName, frameProperties);
+        }
+
+        shared_ptr<Expression> parseNew(){
+            thisEat();
+            string frameName = expect(TokenArt::Identifier, "Class Identifier").value;
+            expect(TokenArt::Semicolon, ";");
+            return make_shared<NewNode>(frameName);
+        }
+
+        shared_ptr<Expression> parseMemberAccess(){
+            string frameName = thisEat().value;
+            expect(TokenArt::Dot, ".");
+            string memberName = expect(TokenArt::Identifier, "Member Identifier").value;
+            return make_shared<MemberAccessNode>(frameName, memberName);
         }
 
     public:

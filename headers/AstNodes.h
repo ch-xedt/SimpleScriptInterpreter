@@ -33,6 +33,9 @@ enum class NodeType{
     ImportNode,
     SystemNode,
     NotNode,
+    FrameNode,
+    NewNode,
+    MemberAccessNode,
 };
 
 struct Statement{
@@ -368,6 +371,40 @@ struct NotNode : public Expression{
         cout<<"\n"<<indent<<"NotNode( ";
         operand->print(depth+1);
         cout<<"\n"<<indent<<")";
+    }
+};
+
+struct FrameNode : public Expression{
+    string frameName = "";
+    vector<shared_ptr<Statement>> frameProperties;
+    FrameNode(string frameName, vector<shared_ptr<Statement>> frameProperties) : Expression(NodeType::FrameNode), frameName(frameName), frameProperties(frameProperties){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"FrameNode( "<<frameName<<" ) (";
+        for(auto &index : frameProperties){
+            cout<<"\n"<<indent<<indent<<indent;
+            index->print(depth+1);
+        }
+        cout<<"\n"<<indent<<")";
+    }
+};
+
+struct NewNode : public Expression{
+    string frameName = "";
+    NewNode(string frameName) : Expression(NodeType::NewNode), frameName(frameName){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"NewNode( "<<frameName<<" )";
+    }
+};
+
+struct MemberAccessNode : public Expression{
+    string frameName = "";
+    string memberName = "";
+    MemberAccessNode(string frameName, string memberName) : Expression(NodeType::MemberAccessNode), frameName(frameName), memberName(memberName){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"MemberAccessNode( "<<frameName<<"."<<memberName<<" )";
     }
 };
 

@@ -9,6 +9,7 @@
 #include "unordered_map"
 #include "functional"
 #include "algorithm"
+#include "set"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ enum class ValueType{
     BoolValue,
     FunctionValue,
     ArrayValue,
+    FrameValue,
 };
 
 inline string ValueTypeToString(ValueType type){
@@ -37,6 +39,8 @@ inline string ValueTypeToString(ValueType type){
             return "FunctionValue";
         case ValueType::ArrayValue:
             return "ArrayValue";
+        case ValueType::FrameValue:
+            return "FrameValue";
         default:
             return "Unknown";
     }
@@ -106,6 +110,16 @@ struct ArrayValue:R_Value{
             cout<<" , ";
         }
         cout<<" )";
+    }
+};
+
+struct FrameValue:R_Value{
+    string frameName = "";
+    unordered_map<string,shared_ptr<R_Value>> frameProperties;
+    set<string> constantProperties;
+    FrameValue(string name, unordered_map<string,shared_ptr<R_Value>> props):R_Value(ValueType::FrameValue), frameName(name), frameProperties(props){}
+    void print() const override{
+        cout<<"\n FrameValue ( "<<frameName<<" )";
     }
 };
 

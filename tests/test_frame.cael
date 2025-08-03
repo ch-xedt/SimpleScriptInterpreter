@@ -1,0 +1,12 @@
+frame a{
+    let i = 3;
+    const z = 1;
+};
+
+let h = new a;
+
+let u = h.i;
+print(u);
+
+h.z = 5;
+print(""+h.z);
