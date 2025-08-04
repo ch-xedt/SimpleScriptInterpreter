@@ -411,8 +411,8 @@ struct MemberAccessNode : public Expression{
 
 struct RepeatNode : public Statement{
     vector<shared_ptr<Statement>> repeatBody;
-    shared_ptr<NumberNode> repeatCount;
-    RepeatNode(vector<shared_ptr<Statement>> repeatBody, shared_ptr<NumberNode> repeatCount) : Statement(NodeType::RepeatNode), repeatBody(repeatBody), repeatCount(repeatCount){}
+    shared_ptr<Expression> repeatCount;
+    RepeatNode(vector<shared_ptr<Statement>> repeatBody, shared_ptr<Expression> repeatCount) : Statement(NodeType::RepeatNode), repeatBody(repeatBody), repeatCount(repeatCount){}
     void print(int depth) const override{
         string indent(3*depth,' ');
         cout<<"\n"<<indent<<"RepeatNode( ";

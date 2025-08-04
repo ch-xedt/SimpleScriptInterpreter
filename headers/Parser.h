@@ -477,10 +477,10 @@ class Parser{
         }
 
         shared_ptr<Statement> parseRepeat(){
+            shared_ptr<Expression> count = nullptr;
             thisEat();
             expect(TokenArt::OpenParen, "(");
-            int count = stoi(expect(TokenArt::Number, "Repeat Count Number Expression").value);
-            shared_ptr<NumberNode> repeatCount = make_shared<NumberNode>(count);
+            count = parseExpressions();
             expect(TokenArt::CloseParen, ")");
             expect(TokenArt::OpenBrace, "{");
             vector<shared_ptr<Statement>> repeatBody;
@@ -489,7 +489,7 @@ class Parser{
             }
             expect(TokenArt::CloseBrace, "}");
             expect(TokenArt::Semicolon, ";");
-            return make_shared<RepeatNode>(repeatBody, repeatCount);
+            return make_shared<RepeatNode>(repeatBody, count);
         }
 
     public:

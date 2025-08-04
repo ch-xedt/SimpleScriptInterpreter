@@ -1,6 +1,7 @@
 let i = 0;
+let j = 5;
 
-repeat(5){
+repeat(j-2){
   print(i + "");
   i = i + 1;
   print("--");

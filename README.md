@@ -1,9 +1,8 @@
-# Simple Interpreter Project
-
+# Caelum
 <br>
 
-## Overview
-A custom programming language interpreter written in C++
+<h3 align="center">Caelum - A custom programming language interpreter written in C++</h3>
+
 
 <br>
 
@@ -187,10 +186,20 @@ REPEAT-Loops allow you to execute a code block a specific number of times.<br>
 The loop will be executed as many times as the given number of times.
 
 ```js
-repeat(5){
+repeat(5){                  # Repeat 5 times #
   print("Hello World!");
 }
 ```
+Expressions can also be used to determine the number of times the loop is executed.
+
+```js
+let j = 5;
+
+repeat(5 + j){              # Repeat 10 times #
+  print("Hello World!");
+}
+```
+
 
 
 <br>
@@ -423,6 +432,13 @@ max.age = 18;
 
 print(max.name + " is " + max.age + " years old");    # output: "Max is 18 years old" #
  ```
+
+
+<br>
+
+
+### **Error Handling :**
+If an error occurs during the execution of the script, the interpreter will throw an error message and terminate the program to prevent further execution. <br>
 
 
 <br>
