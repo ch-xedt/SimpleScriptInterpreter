@@ -37,6 +37,7 @@ enum class NodeType{
     NewNode,
     MemberAccessNode,
     RepeatNode,
+    TypeOfNode,
 };
 
 struct Statement{
@@ -426,5 +427,15 @@ struct RepeatNode : public Statement{
     }
 };
 
+struct TypeOfNode : public Expression{
+    shared_ptr<Expression> expr;
+    TypeOfNode(shared_ptr<Expression> expr) : Expression(NodeType::TypeOfNode), expr(expr){}
+    void print(int depth) const override{
+        string indent(3*depth,' ');
+        cout<<"\n"<<indent<<"TypeOfNode( ";
+        expr->print(depth);
+        cout<<"\n"<<indent;
+    }
+};
 
 #endif

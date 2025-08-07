@@ -1,0 +1,21 @@
+let f = 5;
+let g = "strawberry";
+
+if(!(typeOf(f) == typeOf(g))){
+    print("f and g are from different types (f: " + typeOf(f) + ") (g: " + typeOf(g) + ")");
+}else{
+    print("f and g are from type: " + typeOf(f));
+}
+
+if(typeOf(f) == "NUMBERTYPE"){
+    print("f is a number");
+}
+
+frame a{
+    let r = true;
+};
+let z = new a;
+print("z.r has an type of (" + typeOf(z.r) + ")");
+
+array <2> arr = ["h", "k"];
+print("arr has the type of " + typeOf(arr) + " filled with elements from " + typeOf(arr[0]));

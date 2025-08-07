@@ -165,6 +165,11 @@ class Interpreter{
                         shared_ptr<RepeatNode> repeatNode = dynamic_pointer_cast<RepeatNode>(astNode);
                         return evaluateRepeatNode(repeatNode, environment);
                     }
+                case NodeType::TypeOfNode:
+                    {
+                        shared_ptr<TypeOfNode> typeOfNode = dynamic_pointer_cast<TypeOfNode>(astNode);
+                        return evaluateTypeOfNode(typeOfNode, environment);
+                    }
                 default:
                     cerr<<"\n[[Stage]] : Interpreting  [[ERROR]] : Invalid node type\n";
                     astNode->print();
@@ -814,6 +819,23 @@ class Interpreter{
                 repeatCount--;
             }
             return makeNullValue();
+        }
+
+        shared_ptr<R_Value> evaluateTypeOfNode(shared_ptr<TypeOfNode> typeOfNode, shared_ptr<Environment> environment){
+            shared_ptr<R_Value> runtimeValue = evaluate(typeOfNode->expr, environment);
+            switch (runtimeValue->type) {
+                case ValueType::NullValue:{return makeStringValue("NULLTYPE");}
+                case ValueType::NumberValue:{return makeStringValue("NUMBERTYPE");}
+                case ValueType::StringValue:{return makeStringValue("STRINGTYPE");}
+                case ValueType::BoolValue:{return makeStringValue("BOOLEANTYPE");}
+                case ValueType::ArrayValue:{return makeStringValue("ARRAYTYPE");}
+                case ValueType::FunctionValue:{return makeStringValue("FUNCTIONTYPE");}
+                case ValueType::FrameValue:{return makeStringValue("FRAMETYPE");}
+                default:{
+                    cerr<<"[[Stage]] : Interpreting  [[ERROR]] : Type of Expression in 'typeOf()' could not be found";
+                    exit(1);
+                }
+            }
         }
 
 };

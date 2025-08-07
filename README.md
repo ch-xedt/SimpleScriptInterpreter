@@ -355,7 +355,7 @@ If a size is specified, and fewer values are provided, the remaining entries wil
 let size = 3;
 
 array <size> numbers = [1];        # [1, 0, 0] #
-array <size> words = ["Hello"];    # ["Hello", ""] #
+array <size> words = ["Hello"];    # ["Hello", "", ""] #
 array <size> bools = [true];       # [true, false, false] #
 ```
 Accessing and modifying array elements is supported via index notation, where the first element has an index of 0.<br>
@@ -408,7 +408,8 @@ You can use it to run shell/terminal commands, open programs, or execute scripts
 The available commands depend on the operating system.
 
 ```js
-sys("echo Hello World!");
+sys("echo Hello World!");       # output: "Hello World!" #
+
 ```
 
 <br>
@@ -437,7 +438,47 @@ print(max.name + " is " + max.age + " years old");    # output: "Max is 18 years
 <br>
 
 
-### **Error Handling :**
+### **TYPE checking :**
+
+The type of an instance can be checked using the `typeOf` - function.
+
+
+```js
+let x = 0;
+print(typeOf(x));                 # output: "NUMBERTYPE" #
+print(typeOf("Hello World!"));    # output: "STRINGTYPE" #
+print(typeOf(true));              # output: "BOOLEANTYPE" #
+print(typeOf(null));              # output: "NULLTYPE" #
+...
+```
+The `typeOf` - function returns a string value which can also be used for conditional statements.
+
+```js
+array <> arr = [1, 2, 3, 4, 5];
+
+if(typeOf(arr) == "ARRAYTYPE"){
+  print("arr is an array with elements from type " + typeOf(arr[0]));
+}   # output: "arr is an array with elements from type NUMBERTYPE" #
+
+```
+The `typeOf` - function can also be used to check the type of a frame instance or its properties.
+```js
+frame Person {
+  let name = "";
+  let age = 0;
+}
+
+let max = new Person;
+print(typeOf(max));         # output: "FRAMETYPE" #
+print(typeOf(max.name));    # output: "STRINGTYPE" #
+```
+
+
+
+<br>
+
+
+### **ERROR Handling :**
 If an error occurs during the execution of the script, the interpreter will throw an error message and terminate the program to prevent further execution. <br>
 
 

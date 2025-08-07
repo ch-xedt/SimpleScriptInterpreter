@@ -86,6 +86,18 @@ class Parser{
             return parseVariableAssignment();
         }
 
+        shared_ptr<Expression> parseLast(){
+            switch (thisToken().art) {
+                case TokenArt::TypeOf:{
+                    return parseTypeOf();
+                }
+                default:{
+                    cerr<<"\n[[Stage]]: Parsing     [[ERROR]] Unknown token : "<<thisToken().value;
+                    exit(1);
+                }
+            }
+        }
+
         shared_ptr<Expression> parsePrimitives(){
             if (thisToken().art == TokenArt::BinaryOperator && thisToken().value == "-") {
                 thisEat();
@@ -131,8 +143,7 @@ class Parser{
                     return make_shared<StringNode>(thisEat().value);
                 }
                 default:
-                    cerr<<"\n[[Stage]]: Parsing     [[ERROR]] Unknown token : "<<thisToken().value;
-                    exit(1);
+                    return parseLast();
             }
         }
 
@@ -330,7 +341,7 @@ class Parser{
             expect(TokenArt::Lesser, "<");
             shared_ptr<Expression> arraySize = nullptr;
             if(thisToken().art != TokenArt::Greater){
-                arraySize = parseExpressions();
+                arraySize = parseAdditivBinary();
             }
             expect(TokenArt::Greater, ">");
             string variableName = expect(TokenArt::Identifier, "Identifier").value;
@@ -490,6 +501,14 @@ class Parser{
             expect(TokenArt::CloseBrace, "}");
             expect(TokenArt::Semicolon, ";");
             return make_shared<RepeatNode>(repeatBody, count);
+        }
+
+        shared_ptr<Expression> parseTypeOf(){
+            thisEat();
+            expect(TokenArt::OpenParen, "(");
+            shared_ptr<Expression> expr = parseExpressions();
+            expect(TokenArt::CloseParen, ")");
+            return make_shared<TypeOfNode>(expr);
         }
 
     public:
