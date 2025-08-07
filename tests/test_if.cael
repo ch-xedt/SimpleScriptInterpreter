@@ -1,6 +1,6 @@
 let b = true;
 
-if(b && (5<3 || !(b == false))){
+if(b && (5<3 || b != false)){
   print("Hello World");
 }else{
   print("Goodbye World");

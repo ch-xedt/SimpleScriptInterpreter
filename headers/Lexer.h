@@ -41,6 +41,7 @@ enum class TokenArt {
     Same,//==
     GreaterEqual,//>=
     LesserEqual,//<=
+    NotEqual,//!=
     And,//&&
     Or,//||
     Bang,//!
@@ -132,6 +133,7 @@ class Lexer{
                 case TokenArt::Same: return "SameToken";
                 case TokenArt::GreaterEqual: return "GreaterEqualToken";
                 case TokenArt::LesserEqual: return "LesserEqualToken";
+                case TokenArt::NotEqual: return "NotEqualToken";
                 case TokenArt::And: return "AndToken";
                 case TokenArt::Or: return "OrToken";
                 case TokenArt::Bang: return "BangToken";
@@ -142,6 +144,7 @@ class Lexer{
                 case TokenArt::System: return "SystemToken";
                 case TokenArt::Frame: return "FrameToken";
                 case TokenArt::New: return "NewToken";
+                case TokenArt::TypeOf: return "TypeOfToken";
                 case TokenArt::EndOfFile: return "EndOfFileToken";
                 default: return "UnknownToken";
             } 
@@ -246,9 +249,15 @@ class Lexer{
                         cerr<<"[[Stage]] : Lexing  [[ERROR]] : Invalid token '|'. Missing second '|'.";
                         exit(1);
                     }
-                }else if (source[0] == '!') {        
-                    tokens.push_back({ "!", TokenArt::Bang });
-                    source.erase(0, 1);
+                }else if (source[0] == '!') {
+                    if (!source.empty() && source[1] == '=') {
+                        tokens.push_back({ "!=", TokenArt::NotEqual });
+                        source.erase(0, 2);
+                        continue;
+                    }else{
+                        tokens.push_back({ "!", TokenArt::Bang });
+                        source.erase(0, 1);
+                    }
                 }else if(source[0] == '#'){
                     source.erase(0, 1);
                     while (!source.empty() && source[0] != '#') {
