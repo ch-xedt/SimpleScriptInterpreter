@@ -380,8 +380,9 @@ numbers2[0] = numbers[0];
 You can import headers using the `import` keyword and file path relative to the current main script file.<br>
 The file to be imported must have the `.aer` extension. <br>
 
+<pre>example.aer: </pre>
+
 ```js
-example.aer:
 
 function add(x,y){
   return x + y;
@@ -389,8 +390,10 @@ function add(x,y){
 ```
 Once a header is imported, all of its variables and functions become available in the current script.
 
+<pre>main.cael: </pre>
+
+
 ```js
-main.cael:
 
 import "example.aer";
 
@@ -512,8 +515,8 @@ If an error occurs during the execution of the script, the interpreter will thro
 2. Compile the interpreter in the src folder with the following command (g++ is required) : <br>
 
 ` g++ main.cpp -static -o caelum `
-1. cd to the folder containing the caelum executable
-2. Run the interpreter with the following command: <br>
+3. cd to the folder containing the caelum executable
+4. Run the interpreter with the following command: <br>
 
 `./caelum filepath/to/script`
 
